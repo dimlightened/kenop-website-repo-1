@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IDHMA — E-Shakti Binary Currents Pvt. Ltd.</title>
+  <meta name="description" content="E-Shakti Binary Currents Pvt. Ltd. — Engineering consultancy and specialty chemicals from Aurangabad, India."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:#090d0a;color:#f0e8d5;font-family:'Outfit',sans-serif;min-height:100vh}
+    .page{display:none}.page.active{display:block}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 4vw;background:rgba(9,13,10,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(240,232,213,0.06)}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;color:#f0e8d5;letter-spacing:0.1em;text-decoration:none;cursor:pointer}
+    .nav-logo span{color:#c8921a}
+    .nav-back{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(240,232,213,0.4);cursor:pointer;transition:color 0.2s;background:none;border:none}
+    .nav-back:hover{color:#c8921a}
+    .nav-tag{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.3rem 0.8rem}
+    .nav-tag.gold{color:#c8921a;border:1px solid rgba(200,146,26,0.25)}
+    .nav-tag.green{color:#4a8c5c;border:1px solid rgba(74,140,92,0.25)}
+    .nav-tag.teal{color:#6a9a7a;border:1px solid rgba(106,154,122,0.25)}
+
+    /* HOME PAGE */
+    .wrap{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+    .logo-block{text-align:center;margin-bottom:4rem;animation:rise 1.1s cubic-bezier(0.16,1,0.3,1) both}
+    .logo-sup{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(240,232,213,0.35);margin-bottom:0.8rem}
+    .logo-main{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,5.5rem);font-weight:300;letter-spacing:0.12em;color:#f0e8d5;line-height:1}
+    .logo-main span{color:#c8921a}
+    .logo-sub{font-size:0.6rem;font-family:'DM Mono',monospace;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,232,213,0.3);margin-top:1rem}
+    .divider{width:1px;height:40px;background:linear-gradient(to bottom,transparent,rgba(200,146,26,0.4),transparent);margin:0 auto 3.5rem;animation:rise 1.1s 0.1s cubic-bezier(0.16,1,0.3,1) both}
+    .doors{display:flex;gap:1.5rem;animation:rise 1.1s 0.2s cubic-bezier(0.16,1,0.3,1) both}
+    .door{position:relative;width:200px;padding:2.2rem 2rem 2.8rem;border:1px solid rgba(240,232,213,0.1);cursor:pointer;transition:border-color 0.3s,background 0.3s;background:transparent;overflow:hidden;display:block}
+    .door::before{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;transform:scaleX(0);transform-origin:left;transition:transform 0.4s ease}
+    .door-epc::before{background:#c8921a}
+    .door-mfg::before{background:#4a8c5c}
+    .door-ps::before{background:#6a9a7a}
+    .door:hover{border-color:rgba(240,232,213,0.2);background:rgba(240,232,213,0.03)}
+    .door:hover::before{transform:scaleX(1)}
+    .door-tag{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.25em;text-transform:uppercase;margin-bottom:1.2rem}
+    .door-epc .door-tag{color:#c8921a}
+    .door-mfg .door-tag{color:#4a8c5c}
+    .door-ps .door-tag{color:#6a9a7a}
+    .door-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:300;color:#f0e8d5;line-height:1.2;margin-bottom:1.2rem}
+    .door-lines{display:flex;flex-direction:column;gap:0.35rem}
+    .door-line{font-size:0.58rem;font-family:'DM Mono',monospace;letter-spacing:0.1em;color:rgba(240,232,213,0.35);line-height:1.4}
+    .door-arrow{position:absolute;bottom:1.4rem;right:1.6rem;font-size:0.7rem;color:rgba(240,232,213,0.2);transition:color 0.3s,transform 0.3s}
+    .door:hover .door-arrow{color:rgba(240,232,213,0.6);transform:translate(3px,-3px)}
+    .foot{position:absolute;bottom:2rem;font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(240,232,213,0.18);animation:rise 1.1s 0.4s cubic-bezier(0.16,1,0.3,1) both}
+
+    /* SHARED INNER PAGE STYLES */
+    .hero{min-height:100vh;display:flex;align-items:flex-end;padding:0 4vw 6rem;position:relative;overflow:hidden;padding-top:6rem}
+    .hero-bg{position:absolute;inset:0}
+    .hero-content{position:relative;z-index:2;max-width:700px;animation:rise 1s cubic-bezier(0.16,1,0.3,1) both}
+    .hero-eyebrow{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+    .hero-eyebrow::before{content:'';display:block;width:32px;height:1px}
+    .epc-accent .hero-eyebrow{color:#c8921a}.epc-accent .hero-eyebrow::before{background:#c8921a}
+    .mfg-accent .hero-eyebrow{color:#4a8c5c}.mfg-accent .hero-eyebrow::before{background:#4a8c5c}
+    .ps-accent .hero-eyebrow{color:#c8921a}.ps-accent .hero-eyebrow::before{background:#c8921a}
+    h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,6vw,5rem);font-weight:300;line-height:1.08;color:#f0e8d5;margin-bottom:1.8rem}
+    h1 em{font-style:italic;color:rgba(240,232,213,0.45)}
+    .hero-desc{font-size:1rem;font-weight:300;line-height:1.8;color:rgba(240,232,213,0.5);max-width:500px}
+    .inner-section{padding:5rem 4vw;border-top:1px solid rgba(240,232,213,0.06)}
+    .section-label{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;margin-bottom:2.5rem;display:flex;align-items:center;gap:1rem}
+    .section-label::before{content:'';display:block;width:28px;height:1px}
+    .epc-accent .section-label{color:#c8921a}.epc-accent .section-label::before{background:#c8921a}
+    .mfg-accent .section-label{color:#4a8c5c}.mfg-accent .section-label::before{background:#4a8c5c}
+    .ps-accent .section-label{color:#c8921a}.ps-accent .section-label::before{background:#c8921a}
+    h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;color:#f0e8d5;line-height:1.15;margin-bottom:2rem}
+    h2 em{font-style:italic;color:rgba(240,232,213,0.4)}
+
+    /* SERVICES / PRODUCTS GRID */
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(240,232,213,0.06)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(240,232,213,0.06)}
+    .card{background:#090d0a;padding:2.5rem 2rem;position:relative;overflow:hidden;transition:background 0.3s}
+    .card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;transform:scaleX(0);transform-origin:left;transition:transform 0.4s}
+    .epc-accent .card::after{background:#c8921a}
+    .mfg-accent .card::after{background:#4a8c5c}
+    .card:hover{background:rgba(200,146,26,0.03)}
+    .card:hover::after{transform:scaleX(1)}
+    .card-num{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;margin-bottom:1.5rem;opacity:0.4}
+    .epc-accent .card-num{color:#c8921a}
+    .mfg-accent .card-num{color:#4a8c5c}
+    .card-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:#f0e8d5;margin-bottom:1rem;line-height:1.2}
+    .card-body{font-size:0.85rem;font-weight:300;line-height:1.7;color:rgba(240,232,213,0.45)}
+    .tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:1rem}
+    .tag{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.55rem;border:1px solid}
+    .epc-accent .tag{color:#c8921a;border-color:rgba(200,146,26,0.25)}
+    .mfg-accent .tag{color:#4a8c5c;border-color:rgba(74,140,92,0.25)}
+
+    /* TWO COL */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+    .body-text{font-size:0.95rem;font-weight:300;line-height:1.85;color:rgba(240,232,213,0.5);margin-bottom:1.2rem}
+    .highlight-box{background:rgba(200,146,26,0.05);border:1px solid rgba(200,146,26,0.15);padding:2.5rem}
+    .highlight-quote{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-style:italic;font-weight:300;color:rgba(240,232,213,0.75);line-height:1.6;margin-bottom:1.5rem}
+    .highlight-attr{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(200,146,26,0.6)}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem}
+    .stat{border-left:1px solid rgba(200,146,26,0.3);padding-left:1.2rem}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:#c8921a;line-height:1}
+    .stat-label{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(240,232,213,0.3);margin-top:0.4rem}
+
+    /* FACTS LIST */
+    .facts{border:1px solid rgba(240,232,213,0.07)}
+    .fact{display:flex;gap:1.5rem;padding:1.5rem 1.8rem;border-bottom:1px solid rgba(240,232,213,0.07);transition:background 0.2s}
+    .fact:last-child{border-bottom:none}
+    .fact:hover{background:rgba(74,140,92,0.04)}
+    .fact-num{font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(74,140,92,0.5);min-width:24px;padding-top:0.15rem}
+    .fact-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:#f0e8d5;margin-bottom:0.3rem}
+    .fact-body{font-size:0.82rem;font-weight:300;line-height:1.6;color:rgba(240,232,213,0.4)}
+
+    /* FORM */
+    .form-wrap{max-width:680px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
+    .form-full{grid-column:1/-1}
+    label{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;display:block;margin-bottom:0.35rem}
+    .epc-accent label{color:#c8921a}
+    .mfg-accent label{color:#4a8c5c}
+    .ps-accent label{color:#c8921a}
+    input,select,textarea{width:100%;background:rgba(240,232,213,0.04);border:1px solid rgba(240,232,213,0.08);color:#f0e8d5;padding:0.85rem 1rem;font-family:'Outfit',sans-serif;font-size:0.9rem;font-weight:300;outline:none;transition:border-color 0.2s}
+    input::placeholder,textarea::placeholder{color:rgba(240,232,213,0.25)}
+    .epc-accent input:focus,.epc-accent select:focus,.epc-accent textarea:focus{border-color:rgba(200,146,26,0.5)}
+    .mfg-accent input:focus,.mfg-accent select:focus,.mfg-accent textarea:focus{border-color:rgba(74,140,92,0.5)}
+    select option{background:#090d0a}
+    textarea{min-height:110px;resize:vertical}
+    .btn-submit{border:none;padding:1rem 2rem;font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;width:100%;transition:background 0.2s;margin-top:0.5rem}
+    .epc-accent .btn-submit{background:#c8921a;color:#090d0a}.epc-accent .btn-submit:hover{background:#e8a830}
+    .mfg-accent .btn-submit{background:#4a8c5c;color:#090d0a}.mfg-accent .btn-submit:hover{background:#5aaa6e}
+    .ps-accent .btn-submit{background:#c8921a;color:#090d0a}.ps-accent .btn-submit:hover{background:#e8a830}
+
+    /* CONTACT INFO */
+    .contact-info{padding-top:0.5rem}
+    .contact-details{display:flex;flex-direction:column;gap:1.2rem;margin-top:2rem}
+    .contact-row{display:flex;gap:1rem;align-items:flex-start}
+    .contact-ico{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:#c8921a;min-width:60px;padding-top:0.1rem}
+    .contact-val{font-size:0.85rem;font-weight:300;color:rgba(240,232,213,0.5);line-height:1.5}
+    .contact-val a{color:inherit;text-decoration:none}.contact-val a:hover{color:#c8921a}
+
+    /* PROCESS SIGNALS */
+    .notes-grid{display:flex;flex-direction:column;gap:1px;background:rgba(240,232,213,0.06)}
+    .note-card{background:#090d0a;padding:2.5rem 3rem;display:grid;grid-template-columns:80px 1fr auto;gap:2rem;align-items:start;transition:background 0.3s;position:relative}
+    .note-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:#c8921a;transform:scaleY(0);transform-origin:top;transition:transform 0.4s ease}
+    .note-card:hover{background:rgba(200,146,26,0.03)}.note-card:hover::before{transform:scaleY(1)}
+    .note-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:rgba(200,146,26,0.15);line-height:1}
+    .note-date{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(240,232,213,0.25);margin-bottom:0.6rem}
+    .note-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:#f0e8d5;line-height:1.2;margin-bottom:0.7rem}
+    .note-hook{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.05em;color:#c8921a;font-style:italic;margin-bottom:0.8rem;line-height:1.5}
+    .note-summary{font-size:0.87rem;font-weight:300;line-height:1.75;color:rgba(240,232,213,0.42);max-width:580px}
+    .note-arrow{font-size:0.9rem;color:rgba(240,232,213,0.15);padding-top:0.3rem}
+    .note-card:hover .note-arrow{color:#c8921a}
+    .note-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:1rem}
+    .philosophy{margin:0 4vw 4rem;border:1px solid rgba(200,146,26,0.12);padding:2.5rem 3rem;position:relative}
+    .philosophy::before{content:'"';font-family:'Cormorant Garamond',serif;font-size:7rem;color:rgba(200,146,26,0.06);position:absolute;top:-1rem;left:2.5rem;line-height:1;pointer-events:none}
+    .philosophy-text{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,2.2vw,1.6rem);font-weight:300;font-style:italic;color:rgba(240,232,213,0.65);line-height:1.6;max-width:700px;margin-bottom:1.2rem}
+    .philosophy-attr{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(200,146,26,0.5)}
+    .cta-block{background:rgba(200,146,26,0.05);border:1px solid rgba(200,146,26,0.2);padding:1.5rem;margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .cta-text{font-size:0.9rem;font-weight:300;color:rgba(240,232,213,0.5);line-height:1.6}
+    .cta-text strong{color:#f0e8d5;font-weight:400}
+    .cta-link{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:#c8921a;text-decoration:none;border:1px solid #c8921a;padding:0.55rem 1.1rem;white-space:nowrap;transition:all 0.2s}
+    .cta-link:hover{background:#c8921a;color:#090d0a}
+
+    /* FOOTER */
+    footer{padding:2rem 4vw;border-top:1px solid rgba(240,232,213,0.06);display:flex;align-items:center;justify-content:space-between}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;color:#f0e8d5;letter-spacing:0.1em;cursor:pointer}
+    .footer-logo span{color:#c8921a}
+    .footer-copy{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;color:rgba(240,232,213,0.2)}
+    .footer-back{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(240,232,213,0.3);cursor:pointer;background:none;border:none;transition:color 0.2s}
+    .footer-back:hover{color:#c8921a}
+
+    @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:900px){.grid3,.two-col{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.note-card{grid-template-columns:60px 1fr;padding:2rem 1.5rem}.form-grid{grid-template-columns:1fr}.doors{flex-direction:column;gap:1rem}.door{width:100%;max-width:320px}}
+    @media(max-width:520px){.wrap{justify-content:flex-start;padding-top:5rem}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">IDH<span>MA</span></div>
+  <button class="nav-back" id="nav-back" style="display:none" onclick="showPage('home')">← Back</button>
+  <div class="nav-tag gold" id="nav-tag" style="display:none"></div>
+</nav>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="page active" id="page-home">
+  <div class="wrap">
+    <div class="logo-block">
+      <div class="logo-sup">E-Shakti Binary Currents Pvt. Ltd.</div>
+      <div class="logo-main">IDH<span>MA</span></div>
+      <div class="logo-sub">Aurangabad &nbsp;·&nbsp; Maharashtra &nbsp;·&nbsp; India</div>
+    </div>
+    <div class="divider"></div>
+    <div class="doors">
+      <div class="door door-epc" onclick="showPage('epc')">
+        <div class="door-tag">Engineering</div>
+        <div class="door-title">EPC &amp;<br/>Consultancy</div>
+        <div class="door-lines">
+          <div class="door-line">Process engineering</div>
+          <div class="door-line">Neutralisation assessments</div>
+          <div class="door-line">Plant setup &amp; R&amp;D</div>
+          <div class="door-line">Tocopherol recovery</div>
+        </div>
+        <div class="door-arrow">↗</div>
+      </div>
+      <div class="door door-mfg" onclick="showPage('mfg')">
+        <div class="door-tag">Manufacturing</div>
+        <div class="door-title">Specialty<br/>Chemicals</div>
+        <div class="door-lines">
+          <div class="door-line">Plant sterols &amp; phytosterols</div>
+          <div class="door-line">Gamma oryzanol</div>
+          <div class="door-line">Fatty acids &amp; glycerine</div>
+          <div class="door-line">Biodiesel (ASTM D6751)</div>
+        </div>
+        <div class="door-arrow">↗</div>
+      </div>
+      <div class="door door-ps" onclick="showPage('ps')">
+        <div class="door-tag">Intelligence</div>
+        <div class="door-title">Process<br/>Signals</div>
+        <div class="door-lines">
+          <div class="door-line">Technical note series</div>
+          <div class="door-line">From operating plants</div>
+          <div class="door-line">6 notes published</div>
+        </div>
+        <div class="door-arrow">↗</div>
+      </div>
+    </div>
+    <div class="foot">Est. 2014 &nbsp;·&nbsp; idhma.in</div>
+  </div>
+</div>
+
+<!-- ═══════════════ EPC ═══════════════ -->
+<div class="page epc-accent" id="page-epc">
+  <section class="hero">
+    <div class="hero-bg" style="background:radial-gradient(ellipse 60% 50% at 80% 40%,rgba(200,146,26,0.07) 0%,transparent 70%)"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">EPC &amp; Consultancy</div>
+      <h1>Where chemistry<br/>meets <em>engineering</em><br/>discipline.</h1>
+      <p class="hero-desc">From neutralisation diagnostics to full plant setup — deep process knowledge, independent technical judgment, and hands-on R&amp;D capability in every engagement.</p>
+    </div>
+  </section>
+
+  <section class="inner-section epc-accent">
+    <div class="section-label">What We Do</div>
+    <div class="grid3">
+      <div class="card"><div class="card-num">01</div><div class="card-title">Process Engineering &amp; EPC</div><p class="card-body">End-to-end engineering for oleochemical and edible oil refining plants. From concept through commissioning — process design, equipment selection, vendor negotiation, and project execution.</p></div>
+      <div class="card"><div class="card-num">02</div><div class="card-title">Neutralisation Assessments</div><p class="card-body">Paid diagnostic assessments for refineries struggling with FFA loss, soap formation, and yield inefficiency. Deterministic stoichiometric analysis — not guesswork. Assessed refineries across India.</p></div>
+      <div class="card"><div class="card-num">03</div><div class="card-title">Plant Setup &amp; Consultancy</div><p class="card-body">Technical advisory for greenfield and brownfield projects. Equipment sizing, process flow design, utility planning, and independent review of vendor proposals and EPC contracts.</p></div>
+      <div class="card"><div class="card-num">04</div><div class="card-title">Tocopherol Recovery</div><p class="card-body">Specialty projects focused on recovering and concentrating tocopherols from deodoriser distillate and other high-value byproduct streams in edible oil refining.</p></div>
+      <div class="card"><div class="card-num">05</div><div class="card-title">In-house R&amp;D Partner</div><p class="card-body">Acting as the technical backbone for clients developing specialty chemical products. From bench to scale-up — working as an embedded R&amp;D partner, not an external consultant.</p></div>
+      <div class="card"><div class="card-num">06</div><div class="card-title">Technical EPC Negotiations</div><p class="card-body">Independent technical representation in EPC contract negotiations. We sit on your side — reviewing vendor claims, validating process guarantees, protecting your technical interests.</p></div>
+    </div>
+  </section>
+
+  <section class="inner-section epc-accent">
+    <div class="two-col">
+      <div>
+        <div class="section-label">Our Approach</div>
+        <h2>Independent.<br/><em>First-principles.</em><br/>No agenda.</h2>
+        <p class="body-text">We are not tied to any equipment vendor, chemical supplier, or EPC contractor. Our only interest is the correct technical answer for your plant and your economics.</p>
+        <p class="body-text">Every assessment starts from first-principles chemistry — stoichiometry, thermodynamics, and mass balance — before any recommendation is made.</p>
+        <div class="stats">
+          <div class="stat"><div class="stat-num">₹5L</div><div class="stat-label">Per assessment</div></div>
+          <div class="stat"><div class="stat-num">2014</div><div class="stat-label">In practice</div></div>
+          <div class="stat"><div class="stat-num">Pan-IN</div><div class="stat-label">Client reach</div></div>
+          <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Independent</div></div>
+        </div>
+      </div>
+      <div class="highlight-box">
+        <div class="highlight-quote">"The neutralisation assessment paid for itself in the first month of implementation. We recovered losses we didn't even know we had."</div>
+        <div class="highlight-attr">— Refinery client, West Bengal</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="inner-section epc-accent">
+    <div class="two-col">
+      <div class="contact-info">
+        <div class="section-label">Engage Us</div>
+        <h2>Start a<br/><em>conversation.</em></h2>
+        <p class="body-text">Tell us about your plant, your challenge, or the project you're planning. We'll respond within one business day.</p>
+        <div class="contact-details">
+          <div class="contact-row"><span class="contact-ico">Phone</span><span class="contact-val"><a href="tel:+919503222111">+91 9503 222 111</a></span></div>
+          <div class="contact-row"><span class="contact-ico">Email</span><span class="contact-val"><a href="mailto:info@idhma.in">info@idhma.in</a></span></div>
+          <div class="contact-row"><span class="contact-ico">Address</span><span class="contact-val">E-wing, Bharat Bazar, API Corner,<br/>Chikalthana, Aurangabad,<br/>Maharashtra 431210</span></div>
+        </div>
+      </div>
+      <div>
+        <form onsubmit="handleSubmit(event)" class="epc-accent">
+          <div class="form-grid">
+            <div><label>Your Name</label><input type="text" placeholder="Name" required/></div>
+            <div><label>Company &amp; Location</label><input type="text" placeholder="Company, city"/></div>
+            <div><label>Email</label><input type="email" placeholder="you@company.com" required/></div>
+            <div><label>Area of Interest</label><select><option>Neutralisation Assessment</option><option>Process Engineering / EPC</option><option>Plant Setup Consultancy</option><option>Tocopherol Recovery</option><option>R&amp;D Partnership</option><option>EPC Negotiation</option></select></div>
+            <div class="form-full"><label>Brief Description</label><textarea placeholder="Plant type, capacity, current challenge..."></textarea></div>
+            <div class="form-full"><button type="submit" class="btn-submit">Send Enquiry →</button></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo" onclick="showPage('home')">IDH<span>MA</span></div>
+    <button class="footer-back" onclick="showPage('home')">← Home</button>
+    <div class="footer-copy">© 2026 E-Shakti Binary Currents Pvt. Ltd.</div>
+  </footer>
+</div>
+
+<!-- ═══════════════ MANUFACTURING ═══════════════ -->
+<div class="page mfg-accent" id="page-mfg">
+  <section class="hero">
+    <div class="hero-bg" style="background:radial-gradient(ellipse 60% 50% at 20% 60%,rgba(74,140,92,0.09) 0%,transparent 70%)"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Specialty Chemicals</div>
+      <h1>Nature's molecules,<br/><em>purified</em> to specification.</h1>
+      <p class="hero-desc">Plant sterols, phytosterols, gamma oryzanol, fatty acids, glycerine and biodiesel — all derived from natural plant-based feedstocks, manufactured to international standards.</p>
+    </div>
+  </section>
+
+  <section class="inner-section mfg-accent">
+    <div class="section-label">Product Portfolio</div>
+    <div class="grid3">
+      <div class="card"><div class="card-num">01</div><div class="card-title">Gamma Oryzanol</div><p class="card-body">A powerful antioxidant derived from rice bran oil. Proven cholesterol-modulating properties, widely used in dietary supplements and sports nutrition globally.</p><div class="tags"><span class="tag">Dietary Supplement</span><span class="tag">Sport Nutrition</span></div></div>
+      <div class="card"><div class="card-num">02</div><div class="card-title">Phytosterol</div><p class="card-body">Plant-derived sterols that reduce LDL cholesterol by competing with it for intestinal absorption. Primary raw material for steroid hormone pharmaceuticals.</p><div class="tags"><span class="tag">Pharma</span><span class="tag">Functional Food</span></div></div>
+      <div class="card"><div class="card-num">03</div><div class="card-title">Stigmasterol</div><p class="card-body">A naturally occurring phytosterol with demonstrated anti-cancer activity and plant growth promotion properties. Sourced from soybean and other plant oils.</p><div class="tags"><span class="tag">Anti-Cancer</span><span class="tag">Agri</span></div></div>
+      <div class="card"><div class="card-num">04</div><div class="card-title">Fatty Acids</div><p class="card-body">High-purity Soyabean and Sunflower Fatty Acids. Consistent specification, reliable supply — for industrial, cosmetic, and oleochemical applications.</p><div class="tags"><span class="tag">Soyabean</span><span class="tag">Sunflower</span><span class="tag">Industrial</span></div></div>
+      <div class="card"><div class="card-num">05</div><div class="card-title">Glycerine</div><p class="card-body">Available in Crude, Industrial Grade, and Pharma Grade. Derived from vegetable oil processing with full traceability from source to finished product.</p><div class="tags"><span class="tag">Crude</span><span class="tag">Industrial</span><span class="tag">Pharma</span></div></div>
+      <div class="card"><div class="card-num">06</div><div class="card-title">Biodiesel</div><p class="card-body">ASTM D6751 standard biodiesel, usable directly as B100. A clean-burning, renewable alternative to conventional diesel for transportation and industrial use.</p><div class="tags"><span class="tag">ASTM D6751</span><span class="tag">B100</span><span class="tag">Renewable</span></div></div>
+    </div>
+  </section>
+
+  <section class="inner-section mfg-accent">
+    <div class="two-col">
+      <div>
+        <div class="section-label">The Science</div>
+        <h2>What are<br/><em>plant sterols?</em></h2>
+        <p class="body-text">Plant sterols, also called phytosterols, are naturally found in all plants. They are the plant equivalent of human cholesterol — an integral building block of plant cell walls.</p>
+        <p class="body-text">Their molecular similarity to human cholesterol is precisely what gives them their powerful therapeutic effect. IDHMA sources, processes, and supplies these compounds to exacting specifications.</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="fact-num">01</div><div><div class="fact-title">Clinically proven cholesterol reduction</div><p class="fact-body">Reduces LDL cholesterol by competing with it for intestinal absorption. Incorporated into heart-healthy functional foods — spreads, juices, milk, yogurt — sold worldwide.</p></div></div>
+        <div class="fact"><div class="fact-num">02</div><div><div class="fact-title">Primary pharma precursor</div><p class="fact-body">Phytosterols are the starting material for steroid hormone medicines including corticosteroids, contraceptives, and anabolic compounds.</p></div></div>
+        <div class="fact"><div class="fact-num">03</div><div><div class="fact-title">GRAS status — naturally safe</div><p class="fact-body">Generally Recognised As Safe. Naturally present in vegetable oils, nuts, seeds, and whole grains consumed daily around the world.</p></div></div>
+        <div class="fact"><div class="fact-num">04</div><div><div class="fact-title">100% plant-based, fully traceable</div><p class="fact-body">Extracted entirely from natural plant-based feedstocks with full traceability from source through to finished specification.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="inner-section mfg-accent">
+    <div class="form-wrap">
+      <div class="section-label">Request a Quote</div>
+      <h2>Tell us what<br/><em>you need.</em></h2>
+      <form onsubmit="handleSubmit(event)">
+        <div class="form-grid">
+          <div><label>Name</label><input type="text" placeholder="Your name" required/></div>
+          <div><label>Company</label><input type="text" placeholder="Company name"/></div>
+          <div><label>Email</label><input type="email" placeholder="you@company.com" required/></div>
+          <div><label>Phone</label><input type="tel" placeholder="+91 XXXXX XXXXX"/></div>
+          <div class="form-full"><label>Product</label><select><option>Gamma Oryzanol</option><option>Phytosterol</option><option>Stigmasterol</option><option>Fatty Acids</option><option>Glycerine</option><option>Biodiesel</option></select></div>
+          <div class="form-full"><label>Quantity &amp; Notes</label><textarea placeholder="Quantity, specification, delivery location, timeline..."></textarea></div>
+          <div class="form-full"><button type="submit" class="btn-submit">Send Quote Request →</button></div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo" onclick="showPage('home')">IDH<span>MA</span></div>
+    <button class="footer-back" onclick="showPage('home')">← Home</button>
+    <div class="footer-copy">© 2026 E-Shakti Binary Currents Pvt. Ltd.</div>
+  </footer>
+</div>
+
+<!-- ═══════════════ PROCESS SIGNALS ═══════════════ -->
+<div class="page ps-accent" id="page-ps">
+  <section class="hero" style="min-height:55vh">
+    <div class="hero-bg" style="background:radial-gradient(ellipse 50% 60% at 90% 30%,rgba(200,146,26,0.05) 0%,transparent 70%)"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Technical Intelligence Series</div>
+      <h1>Process Signals.<br/><em>The numbers your plant measures.<br/>The stories they are telling.</em></h1>
+      <p class="hero-desc">Every refinery collects data. Very few <strong style="color:rgba(240,232,213,0.8);font-weight:400">read it.</strong> Process Signals — focused on simple, measurable parameters that quietly encode deep process truths about yield, margin, and discipline.</p>
+    </div>
+  </section>
+
+  <section style="padding:3rem 4vw;border-top:1px solid rgba(240,232,213,0.06)">
+    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,232,213,0.25);margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem">Published Notes — 2025 / 2026 <span style="flex:1;height:1px;background:rgba(240,232,213,0.06);display:block"></span></div>
+    <div class="notes-grid">
+      <div class="note-card"><div class="note-num">06</div><div><div class="note-date">21 March 2026</div><div class="note-title">Soap and Acid Value — Two Faces of the Same Molecule</div><div class="note-hook">"The pH of the system determines which face you see."</div><p class="note-summary">In any system where acid is used to manage soap — neutralisation washing, soap-stock splitting, or biodiesel processing — soap content and acid value are not two independent parameters. They are the same molecule in two different ionic states. This note traces the conjugate relationship through live plant data and shows how a single upstream intervention resolved what appeared to be two separate problems simultaneously.</p><div class="note-tags"><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Soap PPM</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Acid Value</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Neutralisation</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Biodiesel</span></div></div><div class="note-arrow">↗</div></div>
+      <div class="note-card"><div class="note-num">05</div><div><div class="note-date">13 February 2026</div><div class="note-title">The Unsap Story — Chemistry Behind the Percentage</div><div class="note-hook">"Concentration is not generation. And generation is not concentration."</div><p class="note-summary">Every refinery reports Unsap %. Very few define what that number truly represents. This note draws a hard line between natural unsap — biologically synthesised sterols, tocopherols with commercial value — and process-generated unsap formed during overheating and oxidation. Two plants can report the same percentage. One contains value. The other contains damage.</p><div class="note-tags"><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Unsaponifiables</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Thermal Discipline</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Value Recovery</span></div></div><div class="note-arrow">↗</div></div>
+      <div class="note-card"><div class="note-num">04</div><div><div class="note-date">5 February 2026</div><div class="note-title">Soap PPM Before Bleaching and the EBITDA Relation</div><div class="note-hook">"Soap ppm before bleaching rarely violates specifications — but it frequently violates economics."</div><p class="note-summary">Modern refining is engineered to deliver in-spec oil under almost any condition. That buffering is real — and it has a cost that shows up not in oil quality, but in yield loss, spent earth oil, and margin erosion. Soap PPM before bleaching sits at the centre of this shift.</p><div class="note-tags"><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Bleaching</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">EBITDA</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Yield Loss</span></div></div><div class="note-arrow">↗</div></div>
+      <div class="note-card"><div class="note-num">03</div><div><div class="note-date">25 January 2026</div><div class="note-title">What Glycerine in Deodorised Distillate Really Tells You</div><div class="note-hook">"The enzyme does not create a problem. It exposes one."</div><p class="note-summary">When glycerine separates after hydrolysis of DOD, it confirms only one thing: the DOD already contained entrained glycerides, carried mechanically via mist, foam, or vapour-liquid separation failure. The plant did not make more distillate — it lost separation discipline.</p><div class="note-tags"><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">DOD</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Deodorisation</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Neutral Oil Loss</span></div></div><div class="note-arrow">↗</div></div>
+      <div class="note-card"><div class="note-num">02</div><div><div class="note-date">27 December 2025</div><div class="note-title">The Unsaponifiable Frontier — Process Intelligence in the Bioactive Era</div><div class="note-hook">"This is no longer a trace impurity. It is a multi-dimensional indicator of process discipline."</div><p class="note-summary">Most processors treat unsaponifiables as a residual percentage to minimise. This note draws the critical distinction between analytical unsaponifiables (a gross catch-all) and usable unsaponifiables (bioactive, recoverable molecules with commercial value).</p><div class="note-tags"><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Phytosterols</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Tocopherols</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Green Refining</span></div></div><div class="note-arrow">↗</div></div>
+      <div class="note-card"><div class="note-num">01</div><div><div class="note-date">27 December 2025</div><div class="note-title">Acid Oil Iodine Value Is a Process Fingerprint, Not a Coincidence</div><div class="note-hook">"Iodine value variation in soya acid oil is rarely accidental. It is a process fingerprint."</div><p class="note-summary">Across soya-based refineries, acid oil IV between 110–118 is routinely blamed on feedstock differences. This note proves it is a process fingerprint — a measurable signature of neutralisation philosophy, soap-stock splitting severity, oxidation exposure, and storage discipline.</p><div class="note-tags"><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Iodine Value</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Acid Oil</span><span class="tag" style="color:#c8921a;border-color:rgba(200,146,26,0.25)">Fouling</span></div></div><div class="note-arrow">↗</div></div>
+    </div>
+  </section>
+
+  <section style="padding:0 4vw 4rem">
+    <div class="philosophy">
+      <div class="philosophy-text">As refining systems mature, small upstream signals increasingly decide downstream profitability. Those who recognise this early gain an advantage. Those who don't keep optimising where the loss has already moved.</div>
+      <div class="philosophy-attr">— Process Signals, Note 04</div>
+    </div>
+    <div class="cta-block">
+      <div class="cta-text"><strong>If a signal in your plant is hard to explain — we probably know what it means.</strong> These notes represent a fraction of the process intelligence we apply in assessments and EPC engagements.</div>
+      <a href="mailto:nachiket@idhma.in?subject=Assessment Enquiry" class="cta-link">Start an Engagement →</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo" onclick="showPage('home')">IDH<span>MA</span></div>
+    <button class="footer-back" onclick="showPage('home')">← Home</button>
+    <div class="footer-copy">© 2026 E-Shakti Binary Currents Pvt. Ltd.</div>
+  </footer>
+</div>
+
+<script>
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  const back = document.getElementById('nav-back');
+  const tag = document.getElementById('nav-tag');
+  if (name === 'home') {
+    back.style.display = 'none';
+    tag.style.display = 'none';
+    document.title = 'IDHMA — E-Shakti Binary Currents Pvt. Ltd.';
+  } else {
+    back.style.display = 'block';
+    tag.style.display = 'block';
+    if (name === 'epc') { tag.textContent = 'Engineering'; tag.className = 'nav-tag gold'; document.title = 'EPC & Consultancy — IDHMA'; }
+    if (name === 'mfg') { tag.textContent = 'Manufacturing'; tag.className = 'nav-tag green'; document.title = 'Specialty Chemicals — IDHMA'; }
+    if (name === 'ps')  { tag.textContent = 'Process Signals'; tag.className = 'nav-tag gold'; document.title = 'Process Signals — IDHMA'; }
+  }
+}
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.btn-submit');
+  btn.textContent = '✓ Sent — we will be in touch within 24 hours.';
+  btn.style.background = '#2e5235';
+  btn.style.color = '#f0e8d5';
+  btn.disabled = true;
+}
+</script>
+</body>
+</html>
