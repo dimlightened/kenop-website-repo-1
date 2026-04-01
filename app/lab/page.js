@@ -135,7 +135,7 @@ export default function LabForm() {
             type="number"
             value={form[key]}
             onChange={e=>update(key,e.target.value)}
-            style={{width:'100%',padding:'10px',fontSize:18,border:'1px solid #ccc',borderRadius:6,boxSizing:'border-box'}}
+            style={{width:'100%',padding:'10px',fontSize:18,border:'1px solid #ccc',borderRadius:6,boxSizing:'border-box',color:'#222222',background:'white'}}
           />
         </div>
       ))}
