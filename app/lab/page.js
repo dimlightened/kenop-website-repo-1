@@ -87,16 +87,22 @@ export default function LabForm() {
   )
 
   if (saved) return (
-    <div style={{padding:32,fontFamily:'sans-serif',textAlign:'center'}}>
-      <div style={{fontSize:40,marginBottom:12}}>✅</div>
-      <h2 style={{color:'#1D9E75',marginBottom:8}}>Saved</h2>
-      {client && <p style={{color:'#888',fontSize:13,marginBottom:20}}>{client.name}</p>}
+  <div style={{padding:32,fontFamily:'sans-serif',textAlign:'center',background:'white',minHeight:'100vh'}}>
+    <div style={{fontSize:40,marginBottom:12}}>✅</div>
+    <h2 style={{color:'#1D9E75',marginBottom:8}}>Saved</h2>
+    {client && <p style={{color:'#888',fontSize:13,marginBottom:20}}>{client.name}</p>}
+    <div style={{display:'flex',gap:12,justifyContent:'center'}}>
       <button onClick={()=>setSaved(false)}
-        style={{padding:'12px 32px',background:'#1D9E75',color:'white',border:'none',borderRadius:8,fontSize:16,cursor:'pointer'}}>
+        style={{padding:'12px 24px',background:'#1D9E75',color:'white',border:'none',borderRadius:8,fontSize:15,cursor:'pointer'}}>
         Next reading
       </button>
+      <button onClick={()=>router.push('/dashboard')}
+        style={{padding:'12px 24px',background:'white',color:'#1B2A4A',border:'1px solid #1B2A4A',borderRadius:8,fontSize:15,cursor:'pointer'}}>
+        Dashboard
+      </button>
     </div>
-  )
+  </div>
+)
 
   return (
     <div style={{padding:24,maxWidth:480,fontFamily:'sans-serif',background:'white',minHeight:'100vh'}}>
@@ -145,7 +151,7 @@ export default function LabForm() {
         <textarea
           value={form.notes}
           onChange={e=>update('notes',e.target.value)}
-          style={{width:'100%',padding:10,fontSize:14,border:'1px solid #ccc',borderRadius:6,height:72,boxSizing:'border-box'}}
+          style={{width:'100%',padding:10,fontSize:14,border:'1px solid #ccc',borderRadius:6,height:72,boxSizing:'border-box',color:'#222222',background:'white'}}
         />
       </div>
 
