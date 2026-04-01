@@ -99,7 +99,7 @@ export default function LabForm() {
   )
 
   return (
-    <div style={{padding:24,maxWidth:480,fontFamily:'sans-serif'}}>
+    <div style={{padding:24,maxWidth:480,fontFamily:'sans-serif',background:'white',minHeight:'100vh'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
         <h2 style={{color:'#1B2A4A',margin:0}}>Kenop Lab Entry</h2>
         <button onClick={logout}
