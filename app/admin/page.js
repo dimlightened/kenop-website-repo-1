@@ -16,7 +16,8 @@ export default function AdminPanel() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) { router.push('/login'); return }
       const email = session.user.email
-      if (email !== 'nachiket@idhma.in') { router.push('/lab'); return }
+      const adminEmails = ['nachiket@idhma.in', 'rudranipetro@gmail.com']
+if (!adminEmails.includes(email)) { router.push('/lab'); return }
       setUser(session.user)
       loadData()
     })
