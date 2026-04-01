@@ -1,10 +1,15 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function LabForm() {
+  const [user, setUser] = useState(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
   const [form, setForm] = useState({
     soap_ppm_pre_separator: '',
     soap_ppm_post_separator: '',
@@ -15,6 +20,13 @@ export default function LabForm() {
     sample_temp_at_measurement_degc: '',
     notes: ''
   })
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) router.push('/login')
+      else { setUser(session.user); setLoading(false) }
+    })
+  }, [])
 
   const update = (k, v) => setForm(f => ({...f, [k]: v}))
 
@@ -39,6 +51,13 @@ export default function LabForm() {
     else alert('Save failed: ' + error.message)
   }
 
+  const logout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  if (loading) return <div style={{padding:32,fontFamily:'sans-serif'}}>Loading...</div>
+
   if (saved) return (
     <div style={{padding:32,fontFamily:'sans-serif',textAlign:'center'}}>
       <h2 style={{color:'#1D9E75'}}>Saved</h2>
@@ -50,7 +69,11 @@ export default function LabForm() {
 
   return (
     <div style={{padding:24,maxWidth:480,fontFamily:'sans-serif'}}>
-      <h2 style={{marginBottom:20,color:'#1B2A4A'}}>Kenop Lab Entry</h2>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+        <h2 style={{color:'#1B2A4A',margin:0}}>Kenop Lab Entry</h2>
+        <button onClick={logout} style={{background:'none',border:'1px solid #ddd',padding:'6px 12px',borderRadius:6,cursor:'pointer',fontSize:13,color:'#888'}}>Sign out</button>
+      </div>
+
       {[
         ['Soap ppm pre-separator','soap_ppm_pre_separator'],
         ['Soap ppm post-separator','soap_ppm_post_separator'],
@@ -70,6 +93,7 @@ export default function LabForm() {
           />
         </div>
       ))}
+
       <div style={{marginBottom:16}}>
         <label style={{display:'block',fontSize:13,color:'#555',marginBottom:4}}>Notes</label>
         <textarea
@@ -78,6 +102,7 @@ export default function LabForm() {
           style={{width:'100%',padding:10,fontSize:14,border:'1px solid #ccc',borderRadius:6,height:72,boxSizing:'border-box'}}
         />
       </div>
+
       <button
         onClick={save}
         disabled={saving}
