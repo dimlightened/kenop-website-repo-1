@@ -1,4 +1,4 @@
-'use client'
+c'use client'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -15,7 +15,7 @@ export default function Onboard() {
     throughput_tpd: '', feedstock_types: [],
     refining_route: '', operating_mode: '',
     plc_connected: null, plc_make: '',
-    mixing_devices: [], number_of_residence_tanks: '',
+    mixing_device: '', number_of_residence_tanks: '',
     separator_make: '', separator_model: '',
     pid_file: null, pid_file_url: ''
   })
@@ -64,7 +64,7 @@ export default function Onboard() {
         operating_mode: form.operating_mode,
         plc_connected: form.plc_connected,
         plc_make: form.plc_make,
-        mixing_device: mixing_device: (form.mixing_devices||[]).join(' + '),
+        mixing_device: form.mixing_device,
         number_of_residence_tanks: form.number_of_residence_tanks ? parseInt(form.number_of_residence_tanks) : null,
         separator_make: form.separator_make,
         separator_model: form.separator_model,
@@ -141,15 +141,7 @@ export default function Onboard() {
         {btn('No', form.plc_connected===false, ()=>update('plc_connected',false))}
       </div>
       {form.plc_connected && sel('PLC make', 'plc_make', ['Siemens','Allen Bradley','Schneider','Delta','Rockwell','Other'])}
-      <div style={{marginBottom:16}}>
-  <label style={{display:'block',fontSize:13,color:'#555',marginBottom:8}}>Caustic mixing devices (select all that apply)</label>
-  {['Micro-zone','Static mixer','In-line pump','Distributed quills','Batch agitator'].map(d=>(
-    btn(d, (form.mixing_devices||[]).includes(d), ()=>{
-      const current = form.mixing_devices || []
-      update('mixing_devices', current.includes(d) ? current.filter(x=>x!==d) : [...current, d])
-    })
-  ))}
-</div>
+      {sel('Caustic mixing device', 'mixing_device', ['Micro-zone','Static mixer','In-line pump','Distributed quills','Batch agitator'])}
       <div style={{marginBottom:16}}>
         <label style={{display:'block',fontSize:13,color:'#555',marginBottom:8}}>Number of residence tanks</label>
         {['1','2','3+'].map(n=>btn(n, form.number_of_residence_tanks===n, ()=>update('number_of_residence_tanks',n)))}
@@ -188,7 +180,7 @@ export default function Onboard() {
         ['Route', form.refining_route || '—'],
         ['Mode', form.operating_mode || '—'],
         ['PLC', form.plc_connected === true ? `Yes — ${form.plc_make}` : form.plc_connected === false ? 'No' : '—'],
-        ['Mixing devices', (form.mixing_devices||[]).join(' + ') || '—'],
+        ['Mixing device', form.mixing_device || '—'],
         ['Residence tanks', form.number_of_residence_tanks || '—'],
         ['Separator', `${form.separator_make} ${form.separator_model}`.trim() || '—'],
         ['P&ID', form.pid_file ? form.pid_file.name : 'Not uploaded'],
