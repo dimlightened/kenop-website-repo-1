@@ -64,7 +64,7 @@ export default function Onboard() {
         operating_mode: form.operating_mode,
         plc_connected: form.plc_connected,
         plc_make: form.plc_make,
-        mixing_device: mixing_device: (form.mixing_devices||[]).join(' + '),
+        mixing_device: (form.mixing_devices||[]).join(' + '),
         number_of_residence_tanks: form.number_of_residence_tanks ? parseInt(form.number_of_residence_tanks) : null,
         separator_make: form.separator_make,
         separator_model: form.separator_model,
