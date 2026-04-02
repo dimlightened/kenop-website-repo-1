@@ -186,32 +186,72 @@ export default function Dashboard() {
   }
 
   const handleAsk = async (q) => {
-    const text = typeof q === 'string' ? q : question
-    if (!text.trim() || asking) return
-    setQuestion('')
-    setAsking(true)
-    setMobileChat(true)
-    setMessages(prev => [...prev, { role: 'user', text }])
+  const text = typeof q === 'string' ? q : question
+  if (!text.trim() || asking) return
+  setQuestion('')
+  setAsking(true)
+  setMobileChat(true)
+  setMessages(prev => [...prev, { role: 'user', text }])
+
+  // Detect report download requests
+  const lower = text.toLowerCase()
+  const isReport = lower.includes('pdf') || lower.includes('word') || lower.includes('excel') ||
+    lower.includes('generate report') || lower.includes('download report') ||
+    lower.includes('create report')
+  
+  const fmt = lower.includes('word') || lower.includes('doc') ? 'word'
+    : lower.includes('excel') || lower.includes('spreadsheet') ? 'excel'
+    : 'pdf'
+
+  if (isReport) {
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch('/api/ask', {
+      const res = await fetch('/api/generate-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-        body: JSON.stringify({ question: text })
+        body: JSON.stringify({ report_type: 'daily', format: fmt })
       })
-      const data = await res.json()
-      const msg = { role: 'assistant', text: data.answer, source: data.source }
+      if (!res.ok) throw new Error('Report failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = res.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') || `report.${fmt === 'word' ? 'docx' : fmt === 'excel' ? 'xlsx' : 'pdf'}`
+      a.click()
+      URL.revokeObjectURL(url)
+      const msg = { role: 'assistant', text: `Your ${fmt.toUpperCase()} report has been downloaded. It includes KPI status, financial impact, key observations, and value addition opportunity based on your latest data.` }
       setMessages(prev => [...prev, msg])
       await supabase.from('conversations').insert([
         { client_id: client.id, role: 'user', message: text },
-        { client_id: client.id, role: 'assistant', message: data.answer, source: data.source, query_type: data.query_type }
+        { client_id: client.id, role: 'assistant', message: msg.text, source: 'groq', query_type: 'report' }
       ])
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', text: 'Something went wrong. Please try again.' }])
+      setMessages(prev => [...prev, { role: 'assistant', text: 'Report generation failed. Please try the buttons in the Process Assessment section.' }])
     }
     setAsking(false)
+    return
   }
 
+  // Normal ask flow
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+      body: JSON.stringify({ question: text })
+    })
+    const data = await res.json()
+    const msg = { role: 'assistant', text: data.answer, source: data.source }
+    setMessages(prev => [...prev, msg])
+    await supabase.from('conversations').insert([
+      { client_id: client.id, role: 'user', message: text },
+      { client_id: client.id, role: 'assistant', message: data.answer, source: data.source, query_type: data.query_type }
+    ])
+  } catch {
+    setMessages(prev => [...prev, { role: 'assistant', text: 'Something went wrong. Please try again.' }])
+  }
+  setAsking(false)
+}
   const logout = async () => { await supabase.auth.signOut(); router.push('/login') }
 
   const latest = readings[0]
