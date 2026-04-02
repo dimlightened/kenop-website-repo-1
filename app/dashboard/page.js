@@ -141,6 +141,11 @@ export default function Dashboard() {
               border:'1px solid #1B2A4A',borderRadius:8,fontSize:15,cursor:'pointer',fontWeight:600}}>
               + Acid oil batch
             </button>
+            <button onClick={()=>router.push('/documents')}
+              style={{padding:'12px 24px',background:'white',color:'#1B2A4A',
+              border:'1px solid #1B2A4A',borderRadius:8,fontSize:15,cursor:'pointer',fontWeight:600}}>
+              📁 Documents
+            </button>
           </div>
         </div>
 
