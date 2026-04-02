@@ -427,6 +427,33 @@ export default function Dashboard() {
             }} style={{padding:'7px 16px',background:'#1B2A4A',color:'white',border:'none',borderRadius:8,fontSize:12,cursor:'pointer',fontWeight:600,marginBottom:10}}>
               ⬇ Download template
             </button>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:10}}>
+              {[
+                ['📄 PDF report','pdf'],
+                ['📝 Word report','word'],
+                ['📊 Excel report','excel'],
+                ].map(([label,fmt])=>(
+    <button key={fmt} onClick={async()=>{
+      const {data:{session}}=await supabase.auth.getSession()
+      const res=await fetch('/api/generate-report',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+        body:JSON.stringify({report_type:'daily',format:fmt})
+      })
+      if(!res.ok){alert('Report failed');return}
+      const blob=await res.blob()
+      const url=URL.createObjectURL(blob)
+      const a=document.createElement('a')
+      a.href=url
+      a.download=res.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g,'')||`report.${fmt==='word'?'docx':fmt==='excel'?'xlsx':fmt}`
+      a.click()
+      URL.revokeObjectURL(url)
+    }} style={{padding:'7px 14px',background:'white',color:'#1B2A4A',
+      border:'1px solid #ddd',borderRadius:8,fontSize:12,cursor:'pointer',fontWeight:600}}>
+      {label}
+    </button>
+  ))}
+</div>
             <div style={{borderTop:'1px solid #f0f0f0',paddingTop:10}}>
               <div style={{fontSize:12,color:'#555',fontWeight:600,marginBottom:6}}>Upload completed file</div>
               <UploadSection clientId={client.id}/>
