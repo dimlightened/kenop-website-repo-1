@@ -52,6 +52,7 @@ export default function Dashboard() {
   const [docs, setDocs] = useState([])
   const [aoBatches, setAoBatches] = useState([])
   const [messages, setMessages] = useState([])
+  const [insights, setInsights] = useState([])
   const [input, setInput] = useState('')
   const [asking, setAsking] = useState(false)
   const [tab, setTab] = useState('intelligence')
@@ -68,14 +69,16 @@ export default function Dashboard() {
     if (!cl) return
     setClient(cl)
 
-    const [{ data: r }, { data: d }, { data: ao }] = await Promise.all([
+    const [{ data: r }, { data: d }, { data: ao }, { data: ins }] = await Promise.all([
       supabase.from('lab_readings').select('*').eq('client_id', cl.id).order('recorded_at', { ascending: false }).limit(10),
       supabase.from('client_files').select('file_name,doc_category,summary,processed,created_at').eq('client_id', cl.id).order('created_at', { ascending: false }),
       supabase.from('acidoil_batches').select('*').eq('client_id', cl.id).order('recorded_at', { ascending: false }).limit(5),
+      supabase.from('intelligence_insights').select('*').eq('client_id', cl.id).order('generated_at', { ascending: false }).limit(20),
     ])
     setReadings(r || [])
     setDocs(d || [])
     setAoBatches(ao || [])
+    setInsights(ins || [])
   }
 
   async function ask() {
@@ -181,6 +184,28 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
+            {/* Morning report */}
+            {insights.filter(i => i.insight_type === 'morning_report').slice(0,1).map(r => (
+              <div key={r.id} style={{ background:C.bgCard, border:`0.5px solid ${C.border}`, borderRadius:10, padding:'18px 20px', marginBottom:16 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
+                  <span style={{ ...M({ fontSize:9, color:C.green, letterSpacing:'0.12em' }) }}>MORNING REPORT</span>
+                  <span style={{ ...M({ fontSize:9, color:C.textLight }) }}>{new Date(r.generated_at).toLocaleDateString('en-IN', { day:'numeric', month:'short' })}</span>
+                </div>
+                <p style={{ ...D({ fontSize:13, color:C.text, lineHeight:1.75, whiteSpace:'pre-wrap', fontWeight:300 }) }}>{r.body}</p>
+              </div>
+            ))}
+
+            {/* Active alerts */}
+            {insights.filter(i => ['deviation','alert','trend'].includes(i.insight_type) && i.severity !== 'info').slice(0,5).map(ins => (
+              <div key={ins.id} style={{ background: ins.severity === 'critical' ? '#FCEBEB' : C.amberLight, border:`0.5px solid ${ins.severity === 'critical' ? 'rgba(226,75,74,0.2)' : 'rgba(180,83,9,0.2)'}`, borderRadius:10, padding:'14px 16px', marginBottom:10 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
+                  <div style={{ width:6, height:6, borderRadius:'50%', background: ins.severity === 'critical' ? '#E24B4A' : C.amber }} />
+                  <span style={{ ...D({ fontSize:12, fontWeight:500, color: ins.severity === 'critical' ? '#7F1D1D' : '#633806' }) }}>{ins.title}</span>
+                </div>
+                <p style={{ ...D({ fontSize:12, color: ins.severity === 'critical' ? '#7F1D1D' : C.amber, lineHeight:1.65, fontWeight:300 }) }}>{ins.body.slice(0,300)}{ins.body.length > 300 ? '...' : ''}</p>
+              </div>
+            ))}
 
             {/* Empty state */}
             {readings.length === 0 && processedDocs.length === 0 && (
