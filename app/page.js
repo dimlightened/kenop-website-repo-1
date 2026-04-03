@@ -307,7 +307,7 @@ export default function LandingPage() {
                 In every edible oil refinery and biodiesel plant we have worked with, there is recoverable value the owner is not seeing. Not in new equipment. In the process itself.
               </p>
               <div className="up d4" style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:48 }}>
-                <button onClick={() => router.push('/onboard')} style={{ ...D(), fontSize:13, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'11px 24px', borderRadius:7, cursor:'pointer' }}>Onboard your plant →</button>
+                <button onClick={() => router.push('/start')} style={{ ...D(), fontSize:13, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'11px 24px', borderRadius:7, cursor:'pointer' }}>Onboard your plant →</button>
                 <a href="#cases" style={{ ...D(), fontSize:13, color:C.textMid, border:`0.5px solid ${C.borderMid}`, padding:'11px 24px', borderRadius:7, display:'inline-flex', alignItems:'center', transition:'all 0.15s' }} onMouseEnter={e=>{e.currentTarget.style.borderColor=C.green;e.currentTarget.style.color=C.green}} onMouseLeave={e=>{e.currentTarget.style.borderColor=C.borderMid;e.currentTarget.style.color=C.textMid}}>Read case studies</a>
               </div>
               <div style={{ display:'flex', gap:40, paddingTop:32, borderTop:`0.5px solid ${C.border}`, flexWrap:'wrap', rowGap:20 }}>
@@ -384,7 +384,7 @@ export default function LandingPage() {
               <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:28 }}>
                 {['Degumming','Dewaxing','Neutralisation','Soapstock splitting','Bleaching','Deodorisation','Separator efficiency','DOD tocopherol tracking'].map(p => <PPill key={p} c={p}/>)}
               </div>
-              <button onClick={() => router.push('/onboard/edible-oil')} style={{ ...D(), fontSize:13, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'10px 22px', borderRadius:7, cursor:'pointer' }}>Onboard your refinery →</button>
+              <button onClick={() => router.push('/start?v=eo')} style={{ ...D(), fontSize:13, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'10px 22px', borderRadius:7, cursor:'pointer' }}>Onboard your refinery →</button>
             </div>
             <div>
               <div style={{ background:C.bgCard, border:`0.5px solid ${C.border}`, borderRadius:12, padding:'24px', boxShadow:'0 1px 4px rgba(28,22,17,0.06)', marginBottom:16 }}>
@@ -427,7 +427,7 @@ export default function LandingPage() {
               <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:24 }}>
                 {['Glycerolysis','Transesterification','Glycerol splitting','Methanol recovery','FAME distillation','Wet/dry washing','IS 15607:2022'].map(p => <PPill key={p} c={p}/>)}
               </div>
-              <button onClick={() => router.push('/onboard/biodiesel')} style={{ ...D(), fontSize:13, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'10px 22px', borderRadius:7, cursor:'pointer' }}>Onboard your plant →</button>
+              <button onClick={() => router.push('/start?v=bd')} style={{ ...D(), fontSize:13, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'10px 22px', borderRadius:7, cursor:'pointer' }}>Onboard your plant →</button>
             </div>
             <div>
               {/* Biodiesel process illustration */}
@@ -596,8 +596,8 @@ export default function LandingPage() {
             Tell us about your plant. We will show you where the gaps are — using your own numbers, against what your process should achieve. Onboarding takes 20 minutes.
           </p>
           <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
-            <button onClick={() => router.push('/onboard/edible-oil')} style={{ ...D(), fontSize:14, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'12px 28px', borderRadius:8, cursor:'pointer' }}>Edible oil refinery →</button>
-            <button onClick={() => router.push('/onboard/biodiesel')} style={{ ...D(), fontSize:14, color:C.textMid, background:'transparent', border:`0.5px solid ${C.borderMid}`, padding:'12px 28px', borderRadius:8, cursor:'pointer', transition:'all 0.15s' }} onMouseEnter={e=>{e.target.style.color=C.green;e.target.style.borderColor=C.green}} onMouseLeave={e=>{e.target.style.color=C.textMid;e.target.style.borderColor=C.borderMid}}>Biodiesel plant →</button>
+            <button onClick={() => router.push('/start?v=eo')} style={{ ...D(), fontSize:14, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'12px 28px', borderRadius:8, cursor:'pointer' }}>Edible oil refinery →</button>
+            <button onClick={() => router.push('/start?v=bd')} style={{ ...D(), fontSize:14, color:C.textMid, background:'transparent', border:`0.5px solid ${C.borderMid}`, padding:'12px 28px', borderRadius:8, cursor:'pointer', transition:'all 0.15s' }} onMouseEnter={e=>{e.target.style.color=C.green;e.target.style.borderColor=C.green}} onMouseLeave={e=>{e.target.style.color=C.textMid;e.target.style.borderColor=C.borderMid}}>Biodiesel plant →</button>
             <a href='/pricing' style={{fontSize:13,color:'#A09285',marginTop:12,display:'block',textAlign:'center'}}>View full pricing →</a>
           </div>
         </div>
