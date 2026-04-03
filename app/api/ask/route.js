@@ -22,7 +22,11 @@ function classifyQuery(text) {
     feedstock_pretreatment: ['acid oil washing','degumming','phosphoric acid pretreat','bleaching acid oil','pretreatment','phosphatide','gum removal','feed preparation','moisture drying feed'],
     methanol_recovery: ['methanol recovery','methanol removal','demethylation','flash methanol','methanol recycle','methanol distillation','methanol strip'],
     degassing_drying: ['degassing','vacuum dry','moisture removal','drying fame','moisture 500ppm','karl fischer','water content removal','flash dry','vacuum drying','dewatering'],
-    process_monitoring: ['temperature control','pressure reading','level indicator','batch monitoring','shift log','process parameter','reading out of range','instrument','sensor','alarm']
+    process_monitoring: ['temperature control','pressure reading','level indicator','batch monitoring','shift log','process parameter','reading out of range','instrument','sensor','alarm'],
+    neutralisation: ['neutralisation','neutralization','caustic','lye','soap formation','degummed oil','neutralised oil','soapstock','spent lye','wash oil'],
+    bleaching_refinery: ['bleaching','bleached oil','colour removal','chlorophyll','carotenoid','peroxide value','bleaching temperature','earth contact','filter aid'],
+    deodorisation: ['deodorisation','deodorization','deodorizer','stripping','steam stripping','free fatty acid removal','colour reversion','tocopherol','deodorised oil'],
+    winterisation: ['winterisation','winterization','fractionation','dewaxing','wax','cloudpoint','cold test','lauric','stearin fraction','olein fraction']
   }
 
   const productInterests = {
@@ -156,8 +160,9 @@ async function saveClassification(clientId, conversationId, rawQuery, classifica
 export async function POST(request) {
   try {
     const body = await request.json()
-const message = body.message || body.question || body.query || body.content || body.text
-const { clientId, conversationId } = body
+    const message = body.message || body.question || body.query || body.content || body.text
+    const { clientId, conversationId } = body
+    const vertical = body.vertical || 'edible_oil'
 
     if (!message) return Response.json({ error: 'No message' }, { status: 400 })
 
@@ -167,11 +172,9 @@ const { clientId, conversationId } = body
       setImmediate(() => saveClassification(clientId, conversationId, message, classification))
     }
 
-    const systemPrompt = `You are Kenop, an AI process intelligence assistant for edible oil refineries and biodiesel plants in India. You have deep expertise in glycerolysis, transesterification, acid esterification, FAME quality, IS 15607:2022 compliance, and OMC tender requirements.
-
-Respond in the same language the user writes in. If the user writes in Hindi, respond in Hindi. If in Marathi, respond in Marathi. If in English, respond in English.
-
-Be specific with numbers. Give actionable answers. When relevant, mention safety and quality implications.`
+    const systemPrompt = vertical === 'biodiesel'
+      ? `You are Kenop, an AI process intelligence assistant for biodiesel plants in India. You have deep expertise in transesterification, acid esterification, glycerolysis, FAME quality, IS 15607:2022 compliance, and OMC tender requirements. Be specific with numbers. Give actionable answers. Respond in the same language the user writes in. If the query is about a technical parameter of biodiesel, guide the user towards reaching the IS standard, with the relevant test method, and provide probable issues that may be causing that particular variation. If the query is commercial, guide them on how to monetise their otherwise wasted stream without capex or with minimal capex or tolling. Keep the user engaged with motivation and guidance. Kenop is short for Kenopanishad. That philosophy is behind this platform. The user shall get more than they give.`
+      : `You are Kenop, an AI process intelligence assistant for edible oil refineries in India. You have deep expertise in degumming, neutralisation, bleaching, deodorisation, winterisation, acid oil processing, and refinery quality parameters. Be specific with numbers. Give actionable answers. Respond in the same language the user writes in. If the query is technical, guide them to reaching the end goal without additional capex, or with minimal capex. If the query is commercial, guide them on how to monetise their byproduct or waste stream without capex or with minimal capex, or tolling. Keep the user engaged with motivation and guidance. Kenop is short for Kenopanishad. That philosophy is behind this platform. The user shall get more than they give.`
 
     let response = null
     const ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434'
