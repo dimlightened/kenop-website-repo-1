@@ -1,256 +1,28 @@
 'use client'
-import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
 
-const STEPS = ['Company', 'Plant', 'Equipment', 'Documents', 'Review']
-
-export default function Onboard() {
+export default function OnboardSelect() {
   const router = useRouter()
-  const [step, setStep] = useState(0)
-  const [submitting, setSubmitting] = useState(false)
-  const [form, setForm] = useState({
-    company_name: '', city: '', state: '', gstin: '',
-    contact_name: '', email: '', phone: '',
-    throughput_tpd: '', feedstock_types: [],
-    refining_route: '', operating_mode: '',
-    plc_connected: null, plc_make: '',
-    mixing_devices: [], number_of_residence_tanks: '',
-    separator_make: '', separator_model: '',
-    pid_file: null, pid_file_url: ''
-  })
-
-  const update = (k, v) => setForm(f => ({...f, [k]: v}))
-
-  const toggleFeedstock = (f) => {
-    setForm(prev => ({
-      ...prev,
-      feedstock_types: prev.feedstock_types.includes(f)
-        ? prev.feedstock_types.filter(x => x !== f)
-        : [...prev.feedstock_types, f]
-    }))
-  }
-
-  const uploadPID = async (file) => {
-    if (!file) return null
-    const ext = file.name.split('.').pop()
-    const filename = `pid_${Date.now()}.${ext}`
-    const { data, error } = await supabase.storage
-      .from('pid-files')
-      .upload(filename, file)
-    if (error) { alert('Upload failed: ' + error.message); return null }
-    return data.path
-  }
-
-  const submit = async () => {
-    setSubmitting(true)
-    let pid_url = ''
-    if (form.pid_file) {
-      pid_url = await uploadPID(form.pid_file)
-    }
-    const { error } = await supabase
-      .from('onboarding_applications')
-      .insert({
-        company_name: form.company_name,
-        city: form.city,
-        state: form.state,
-        gstin: form.gstin,
-        contact_name: form.contact_name,
-        email: form.email,
-        phone: form.phone,
-        throughput_tpd: form.throughput_tpd ? parseFloat(form.throughput_tpd) : null,
-        feedstock_types: form.feedstock_types,
-        refining_route: form.refining_route,
-        operating_mode: form.operating_mode,
-        plc_connected: form.plc_connected,
-        plc_make: form.plc_make,
-        mixing_device: (form.mixing_devices||[]).join(' + '),
-        number_of_residence_tanks: form.number_of_residence_tanks ? parseInt(form.number_of_residence_tanks) : null,
-        separator_make: form.separator_make,
-        separator_model: form.separator_model,
-        pid_file_url: pid_url,
-        status: 'pending'
-      })
-    setSubmitting(false)
-    if (error) alert('Error: ' + error.message)
-    else router.push('/onboard/success')
-  }
-
-  const inp = (label, key, type='text', placeholder='') => (
-    <div style={{marginBottom:16}}>
-      <label style={{display:'block',fontSize:13,color:'#555',marginBottom:5}}>{label}</label>
-      <input type={type} value={form[key]} onChange={e=>update(key,e.target.value)}
-        placeholder={placeholder}
-        style={{width:'100%',padding:'10px 12px',fontSize:15,border:'1px solid #ddd',borderRadius:6,boxSizing:'border-box'}}/>
-    </div>
-  )
-
-  const sel = (label, key, options) => (
-    <div style={{marginBottom:16}}>
-      <label style={{display:'block',fontSize:13,color:'#555',marginBottom:5}}>{label}</label>
-      <select value={form[key]} onChange={e=>update(key,e.target.value)}
-        style={{width:'100%',padding:'10px 12px',fontSize:15,border:'1px solid #ddd',borderRadius:6,boxSizing:'border-box',background:'white'}}>
-        <option value=''>Select...</option>
-        {options.map(o=><option key={o} value={o}>{o}</option>)}
-      </select>
-    </div>
-  )
-
-  const btn = (label, active, onClick) => (
-    <button onClick={onClick} style={{
-      padding:'8px 16px',marginRight:8,marginBottom:8,
-      background: active ? '#1B2A4A' : 'white',
-      color: active ? 'white' : '#1B2A4A',
-      border:'1px solid #1B2A4A',borderRadius:6,cursor:'pointer',fontSize:14
-    }}>{label}</button>
-  )
-
-  const steps = [
-    // Step 0 — Company
-    <div key={0}>
-      <h3 style={{marginBottom:20,color:'#1B2A4A'}}>Company details</h3>
-      {inp('Company name *', 'company_name', 'text', 'Budge Budge Refineries Ltd')}
-      {inp('City *', 'city', 'text', 'Aurangabad')}
-      {inp('State *', 'state', 'text', 'Maharashtra')}
-      {inp('GSTIN (optional)', 'gstin')}
-      {inp('Contact person name *', 'contact_name')}
-      {inp('Email address *', 'email', 'email', 'operator@refinery.com')}
-      {inp('Phone number', 'phone', 'tel')}
-    </div>,
-
-    // Step 1 — Plant
-    <div key={1}>
-      <h3 style={{marginBottom:20,color:'#1B2A4A'}}>Plant configuration</h3>
-      {inp('Refining capacity (TPD) *', 'throughput_tpd', 'number', '350')}
-      <div style={{marginBottom:16}}>
-        <label style={{display:'block',fontSize:13,color:'#555',marginBottom:8}}>Primary feedstock (select all that apply)</label>
-        {['CDSBO','Sunflower','Palm','RBO','Groundnut','Cottonseed','Animal tallow','Other'].map(f=>(
-          btn(f, form.feedstock_types.includes(f), ()=>toggleFeedstock(f))
-        ))}
-      </div>
-      {sel('Refining route', 'refining_route', ['Chemical (wet)','Physical','Both'])}
-      {sel('Operating mode', 'operating_mode', ['Continuous','Batch','Semi-batch'])}
-    </div>,
-
-    // Step 2 — Equipment
-    <div key={2}>
-      <h3 style={{marginBottom:20,color:'#1B2A4A'}}>Equipment and control</h3>
-      <div style={{marginBottom:16}}>
-        <label style={{display:'block',fontSize:13,color:'#555',marginBottom:8}}>PLC connected?</label>
-        {btn('Yes', form.plc_connected===true, ()=>update('plc_connected',true))}
-        {btn('No', form.plc_connected===false, ()=>update('plc_connected',false))}
-      </div>
-      {form.plc_connected && sel('PLC make', 'plc_make', ['Siemens','Allen Bradley','Schneider','Delta','Rockwell','Other'])}
-      <div style={{marginBottom:16}}>
-  <label style={{display:'block',fontSize:13,color:'#555',marginBottom:8}}>Caustic mixing devices (select all that apply)</label>
-  {['Micro-zone','Static mixer','In-line pump','Distributed quills','Batch agitator'].map(d=>(
-    btn(d, (form.mixing_devices||[]).includes(d), ()=>{
-      const current = form.mixing_devices || []
-      update('mixing_devices', current.includes(d) ? current.filter(x=>x!==d) : [...current, d])
-    })
-  ))}
-</div>
-      <div style={{marginBottom:16}}>
-        <label style={{display:'block',fontSize:13,color:'#555',marginBottom:8}}>Number of residence tanks</label>
-        {['1','2','3+'].map(n=>btn(n, form.number_of_residence_tanks===n, ()=>update('number_of_residence_tanks',n)))}
-      </div>
-      {sel('Separator make', 'separator_make', ['Alfa Laval','GEA','Flottweg','Andritz','Other','None'])}
-      {inp('Separator model (e.g. PX-65)', 'separator_model')}
-    </div>,
-
-    // Step 3 — Documents
-    <div key={3}>
-      <h3 style={{marginBottom:20,color:'#1B2A4A'}}>Plant documents</h3>
-      <p style={{fontSize:14,color:'#666',marginBottom:20,lineHeight:1.6}}>
-        Please upload your P&ID (process and instrumentation diagram). A PDF or clear photo is fine. Even a hand-drawn sketch helps us understand your plant layout.
-      </p>
-      <div style={{border:'2px dashed #ccc',borderRadius:8,padding:32,textAlign:'center',marginBottom:16}}>
-        <input type='file' accept='.pdf,.png,.jpg,.jpeg,.heic'
-          onChange={e=>update('pid_file', e.target.files[0])}
-          style={{display:'block',margin:'0 auto'}}/>
-        {form.pid_file && <p style={{marginTop:12,fontSize:13,color:'#1D9E75'}}>Selected: {form.pid_file.name}</p>}
-        <p style={{fontSize:12,color:'#aaa',marginTop:8}}>PDF, PNG, JPG or HEIC — max 10MB</p>
-      </div>
-      <p style={{fontSize:13,color:'#999'}}>No P&ID available? You can skip this — our team will follow up.</p>
-    </div>,
-
-    // Step 4 — Review
-    <div key={4}>
-      <h3 style={{marginBottom:20,color:'#1B2A4A'}}>Review and submit</h3>
-      {[
-        ['Company', form.company_name],
-        ['Location', `${form.city}, ${form.state}`],
-        ['Contact', form.contact_name],
-        ['Email', form.email],
-        ['Phone', form.phone],
-        ['Capacity', form.throughput_tpd ? `${form.throughput_tpd} TPD` : '—'],
-        ['Feedstock', form.feedstock_types.join(', ') || '—'],
-        ['Route', form.refining_route || '—'],
-        ['Mode', form.operating_mode || '—'],
-        ['PLC', form.plc_connected === true ? `Yes — ${form.plc_make}` : form.plc_connected === false ? 'No' : '—'],
-        ['Mixing devices', (form.mixing_devices||[]).join(' + ') || '—'],
-        ['Residence tanks', form.number_of_residence_tanks || '—'],
-        ['Separator', `${form.separator_make} ${form.separator_model}`.trim() || '—'],
-        ['P&ID', form.pid_file ? form.pid_file.name : 'Not uploaded'],
-      ].map(([k,v])=>(
-        <div key={k} style={{display:'flex',padding:'10px 0',borderBottom:'1px solid #f0f0f0'}}>
-          <span style={{width:140,fontSize:13,color:'#888',flexShrink:0}}>{k}</span>
-          <span style={{fontSize:14,color:'#222'}}>{v}</span>
-        </div>
-      ))}
-    </div>
-  ]
-
   return (
-    <div style={{minHeight:'100vh',background:'#F4F6F8',fontFamily:'sans-serif',padding:'32px 16px'}}>
-      <div style={{maxWidth:520,margin:'0 auto'}}>
-
-        {/* Header */}
-        <div style={{textAlign:'center',marginBottom:32}}>
-          <h2 style={{color:'#1B2A4A',marginBottom:4}}>Kenop Intelligence</h2>
-          <p style={{color:'#888',fontSize:14}}>Plant onboarding — takes about 5 minutes</p>
+    <div style={{ background:'#0D1117', minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', fontFamily:'sans-serif', padding:24 }}>
+      <div style={{ fontSize:10, color:'rgba(29,158,117,0.5)', letterSpacing:'0.3em', fontFamily:'monospace', marginBottom:4 }}>अथ</div>
+      <div style={{ fontSize:22, fontWeight:600, color:'#E6EDF3', letterSpacing:'0.08em', marginBottom:8 }}>KEN<span style={{color:'#1D9E75'}}>OP</span></div>
+      <div style={{ fontSize:14, color:'#7D8590', marginBottom:40 }}>What type of plant are you onboarding?</div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, maxWidth:560, width:'100%' }}>
+        <div onClick={() => router.push('/onboard/biodiesel')} style={{ background:'#161B22', border:'0.5px solid rgba(255,255,255,0.08)', borderRadius:12, padding:'28px 24px', cursor:'pointer' }}>
+          <div style={{ fontSize:32, marginBottom:16 }}>⚗️</div>
+          <div style={{ fontSize:16, fontWeight:500, color:'#E6EDF3', marginBottom:8 }}>Biodiesel plant</div>
+          <div style={{ fontSize:12, color:'#7D8590', lineHeight:1.6 }}>Transesterification · Glycerolysis · FAME · OMC tender</div>
+          <div style={{ marginTop:20, fontSize:12, color:'#1D9E75' }}>Start onboarding →</div>
         </div>
-
-        {/* Progress */}
-        <div style={{display:'flex',marginBottom:32}}>
-          {STEPS.map((s,i)=>(
-            <div key={s} style={{flex:1,textAlign:'center'}}>
-              <div style={{
-                width:28,height:28,borderRadius:'50%',margin:'0 auto 6px',
-                display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,fontWeight:600,
-                background: i<=step ? '#1D9E75' : '#ddd',
-                color: i<=step ? 'white' : '#999'
-              }}>{i+1}</div>
-              <div style={{fontSize:11,color: i<=step ? '#1D9E75' : '#999'}}>{s}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Card */}
-        <div style={{background:'white',borderRadius:12,padding:28,boxShadow:'0 2px 16px rgba(0,0,0,0.06)'}}>
-          {steps[step]}
-        </div>
-
-        {/* Navigation */}
-        <div style={{display:'flex',justifyContent:'space-between',marginTop:20}}>
-          <button
-            onClick={()=>setStep(s=>s-1)}
-            disabled={step===0}
-            style={{padding:'12px 24px',background:'white',border:'1px solid #ddd',borderRadius:8,fontSize:15,cursor:step===0?'not-allowed':'pointer',color:step===0?'#ccc':'#333'}}
-          >Back</button>
-
-          {step < STEPS.length-1
-            ? <button onClick={()=>setStep(s=>s+1)}
-                style={{padding:'12px 24px',background:'#1B2A4A',color:'white',border:'none',borderRadius:8,fontSize:15,cursor:'pointer',fontWeight:600}}>
-                Continue
-              </button>
-            : <button onClick={submit} disabled={submitting}
-                style={{padding:'12px 24px',background:'#1D9E75',color:'white',border:'none',borderRadius:8,fontSize:15,cursor:'pointer',fontWeight:600}}>
-                {submitting ? 'Submitting...' : 'Submit application'}
-              </button>
-          }
+        <div onClick={() => router.push('/onboard/edible-oil')} style={{ background:'#161B22', border:'0.5px solid rgba(255,255,255,0.08)', borderRadius:12, padding:'28px 24px', cursor:'pointer' }}>
+          <div style={{ fontSize:32, marginBottom:16 }}>🫙</div>
+          <div style={{ fontSize:16, fontWeight:500, color:'#E6EDF3', marginBottom:8 }}>Edible oil refinery</div>
+          <div style={{ fontSize:12, color:'#7D8590', lineHeight:1.6 }}>Neutralisation · Bleaching · Deodorisation · Acid oil</div>
+          <div style={{ marginTop:20, fontSize:12, color:'#1D9E75' }}>Start onboarding →</div>
         </div>
       </div>
+      <div style={{ marginTop:48, fontSize:10, color:'rgba(255,255,255,0.1)', letterSpacing:'0.25em', fontFamily:'monospace' }}>THE USER SHALL RECEIVE MORE THAN THEY GIVE · KENOPANISHAD</div>
     </div>
   )
 }
