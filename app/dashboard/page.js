@@ -1,4 +1,5 @@
 'use client'
+import DataCompletenessCard from '@/components/DataCompletenessCard'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
@@ -201,7 +202,7 @@ export default function Dashboard() {
         `}</style>
 
         <main style={{ flex:1, padding:'20px 24px', maxWidth:1400, margin:'0 auto', width:'100%' }}>
-
+          <DataCompletenessCard />
           {/* KPI CARDS */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:20 }}>
             {KPI_DEFS.map(kpi => {
