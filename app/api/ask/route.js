@@ -237,7 +237,7 @@ Be specific with numbers. Give actionable answers. When relevant, mention safety
 
     if (!response) return Response.json({ error: 'All AI layers unavailable' }, { status: 503 })
 
-    return Response.json({ response, classification })
+    return Response.json({ answer: response, response, classification })
 
   } catch (err) {
     console.error('Ask route error:', err)
