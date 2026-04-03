@@ -1,4 +1,5 @@
 'use client'
+import DataCompletenessCard from '@/components/DataCompletenessCard'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
