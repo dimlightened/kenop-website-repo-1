@@ -57,6 +57,11 @@ async function callGroqVision(base64, mediaType, prompt) {
 }
 
 export async function POST(request) {
+  // Allow calls with secret key (no login needed)
+  const secret = request.headers.get('x-kenop-secret')
+  if (secret !== process.env.KENOP_ADMIN_SECRET) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     // Get pending jobs
     const { data: jobs } = await supabase
