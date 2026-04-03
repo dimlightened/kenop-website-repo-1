@@ -283,7 +283,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="nav-links" style={{ display:'flex', alignItems:'center', gap:28 }}>
-          {[['Edible oil','#edible-oil'],['Biodiesel','#biodiesel'],['Case studies','#cases'],['Why Kenop','#moat']].map(([l,h]) => (
+          {[['Edible oil','#edible-oil'],['Biodiesel','#biodiesel'],['Case studies','#cases'],['Why Kenop','#moat'],['Pricing','/pricing']].map(([l,h]) => (
             <a key={l} href={h} style={{ ...D(), fontSize:13, color:C.textMid, transition:'color 0.15s' }} onMouseEnter={e=>e.target.style.color=C.text} onMouseLeave={e=>e.target.style.color=C.textMid}>{l}</a>
           ))}
           <button onClick={() => router.push('/login')} style={{ ...D(), fontSize:12, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'7px 18px', borderRadius:6, cursor:'pointer' }}>Sign in</button>
@@ -562,6 +562,7 @@ export default function LandingPage() {
           <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
             <button onClick={() => router.push('/onboard/edible-oil')} style={{ ...D(), fontSize:14, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'12px 28px', borderRadius:8, cursor:'pointer' }}>Edible oil refinery →</button>
             <button onClick={() => router.push('/onboard/biodiesel')} style={{ ...D(), fontSize:14, color:C.textMid, background:'transparent', border:`0.5px solid ${C.borderMid}`, padding:'12px 28px', borderRadius:8, cursor:'pointer', transition:'all 0.15s' }} onMouseEnter={e=>{e.target.style.color=C.green;e.target.style.borderColor=C.green}} onMouseLeave={e=>{e.target.style.color=C.textMid;e.target.style.borderColor=C.borderMid}}>Biodiesel plant →</button>
+            <a href='/pricing' style={{fontSize:13,color:'#A09285',marginTop:12,display:'block',textAlign:'center'}}>View full pricing →</a>
           </div>
         </div>
       </section>
