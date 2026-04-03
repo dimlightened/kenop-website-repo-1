@@ -1,5 +1,4 @@
 'use client'
-import DataCompletenessCard from '@/components/DataCompletenessCard'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
@@ -202,7 +201,37 @@ export default function Dashboard() {
         `}</style>
 
         <main style={{ flex:1, padding:'20px 24px', maxWidth:1400, margin:'0 auto', width:'100%' }}>
-          <DataCompletenessCard />
+          
+      {/* Onboarding completion prompt */}
+      {(function DataGapPrompt() {
+        const [gap, setGap] = React.useState(null)
+        React.useEffect(() => {
+          const s = supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) return
+            fetch('/api/onboarding/completion', { headers: { Authorization: 'Bearer ' + session.access_token } })
+              .then(r => r.ok ? r.json() : null).then(d => { if (d && d.completion_pct < 85) setGap(d) })
+          })
+        }, [])
+        if (!gap) return null
+        const missing = (gap.missing_fields || []).flat().filter(Boolean)
+        if (!missing.length) return null
+        const pct = gap.completion_pct || 0
+        const col = pct < 40 ? '#E24B4A' : pct < 60 ? '#B45309' : '#1D9E75'
+        return (
+          <div style={{ background:'#FEF8EE', border:'0.5px solid rgba(180,83,9,0.2)', borderRadius:12, padding:'16px 18px', marginBottom:16 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8, flexWrap:'wrap', gap:8 }}>
+              <span style={{ fontSize:11, fontFamily:"'JetBrains Mono',monospace", color:'#6B6056' }}>ONBOARDING {pct}% COMPLETE</span>
+              <button onClick={() => window.location.href = gap.vertical === 'edible_oil' ? '/onboard/edible-oil' : '/onboard/biodiesel'} style={{ fontSize:12, color:'#1D9E75', background:'transparent', border:'0.5px solid rgba(29,158,117,0.2)', padding:'4px 10px', borderRadius:6, cursor:'pointer' }}>Complete →</button>
+            </div>
+            <div style={{ height:4, borderRadius:2, background:'rgba(28,22,17,0.08)', overflow:'hidden', marginBottom:8 }}>
+              <div style={{ height:'100%', width:pct+'%', background:col, borderRadius:2 }} />
+            </div>
+            {missing.map((item, i) => (
+              <div key={i} style={{ fontSize:12, color:'#1C1611', padding:'5px 8px', background:'rgba(255,255,255,0.7)', borderRadius:6, marginBottom:4 }}>· {item}</div>
+            ))}
+          </div>
+        )
+      })()}
           {/* KPI CARDS */}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:20 }}>
             {KPI_DEFS.map(kpi => {
