@@ -152,7 +152,7 @@ export async function POST(request) {
           doc_category: category,
           extracted_text: text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').slice(0, 8000),
           extracted_data: extractedData,
-          summary: summary.slice(0, 500),
+          summary: summary.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uD800-\uDFFF]/g,'').slice(0, 500),
           processed: true,
           processed_at: new Date().toISOString()
         }, { onConflict: 'client_id,storage_path' })
