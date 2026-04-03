@@ -57,9 +57,10 @@ async function callGroqVision(base64, mediaType, prompt) {
 }
 
 export async function POST(request) {
-  // Allow calls with secret key (no login needed)
+  // Allow Vercel cron (no auth header) or manual calls with secret
   const secret = request.headers.get('x-kenop-secret')
-  if (secret !== process.env.KENOP_ADMIN_SECRET) {
+  const isCron = request.headers.get('x-vercel-cron') === '1'
+  if (!isCron && secret !== process.env.KENOP_ADMIN_SECRET) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
   try {
