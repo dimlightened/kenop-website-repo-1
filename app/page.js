@@ -67,7 +67,7 @@ export default function LandingPage() {
     {
       n: '02',
       title: 'Historical baseline',
-      desc: 'Last 10 batch records onboarded. Feed FFA, methanol dose, catalyst dose, glycerol recovered, FAME yield, flash point, CFPP, IS 15607 pass or fail. The AI now knows what your plant's normal looks like.',
+      desc: 'Last 10 batch records onboarded. Feed FFA, methanol dose, catalyst dose, glycerol recovered, FAME yield, flash point, CFPP, IS 15607 pass or fail. The AI now knows what your plant normal looks like.',
     },
     {
       n: '03',
