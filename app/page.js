@@ -550,6 +550,42 @@ export default function LandingPage() {
         </div>
       </section>
 
+
+      {/* ── PRICING PREVIEW ── */}
+      <section style={{ padding:'80px 32px', background:C.bgAlt, borderTop:`0.5px solid ${C.border}`, borderBottom:`0.5px solid ${C.border}` }}>
+        <div style={{ maxWidth:1060, margin:'0 auto' }}>
+          <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:36, flexWrap:'wrap', gap:16 }}>
+            <div>
+              <p style={{ ...M({ fontSize:10, color:C.textLight, letterSpacing:'0.18em', marginBottom:8 }) }}>PRICING</p>
+              <h2 style={{ ...S({ fontSize:32, fontWeight:700, letterSpacing:'-0.5px', color:C.text }) }}>Priced on your plant capacity</h2>
+            </div>
+            <a href="/pricing" style={{ ...D({ fontSize:13, color:C.green }) }}>See full pricing & process scope tool →</a>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,minmax(0,1fr))', gap:12, marginBottom:20 }}>
+            {[
+              { n:'Starter', bd:'≤ 20 TPD', eo:'≤ 30 TPD', bdp:'₹11,000', eop:'₹31,000', c:'#378ADD', cb:'#E6F1FB' },
+              { n:'Pro', bd:'21–50 TPD', eo:'31–80 TPD', bdp:'₹22,000', eop:'₹52,000', c:C.green, cb:C.greenLight, pop:true },
+              { n:'Growth', bd:'51–100 TPD', eo:'81–200 TPD', bdp:'₹45,000', eop:'₹90,000', c:'#B45309', cb:'#FEF8EE' },
+              { n:'Enterprise', bd:'100+ TPD', eo:'200+ TPD', bdp:'₹1L+', eop:'₹1.5L+', c:'#534AB7', cb:'#EEEDFE' },
+            ].map(p => (
+              <div key={p.n} style={{ background:C.bgCard, border:`0.5px solid ${p.pop ? C.green : C.border}`, borderWidth: p.pop ? 2 : '0.5px', borderRadius:12, padding:16, position:'relative' }}>
+                {p.pop && <div style={{ position:'absolute', top:-10, left:'50%', transform:'translateX(-50%)', background:C.green, color:'#fff', ...M({ fontSize:9, padding:'2px 10px', borderRadius:999, whiteSpace:'nowrap' }) }}>Most plants</div>}
+                <div style={{ ...D({ fontSize:13, fontWeight:500, color:C.text, marginBottom:10 }) }}>{p.n}</div>
+                <div style={{ ...M({ fontSize:9, color:C.textLight, marginBottom:6 }) }}>BIODIESEL · {p.bd}</div>
+                <div style={{ ...S({ fontSize:18, fontWeight:700, color:p.c, lineHeight:1, marginBottom:8 }) }}>{p.bdp}<span style={{ fontSize:11, ...D({ fontWeight:400 }) }}>/mo</span></div>
+                <div style={{ height:'0.5px', background:C.border, marginBottom:8 }} />
+                <div style={{ ...M({ fontSize:9, color:C.textLight, marginBottom:6 }) }}>EDIBLE OIL · {p.eo}</div>
+                <div style={{ ...S({ fontSize:18, fontWeight:700, color:p.c, lineHeight:1 }) }}>{p.eop}<span style={{ fontSize:11, ...D({ fontWeight:400 }) }}>/mo</span></div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
+            <a href="/trial" style={{ ...D({ fontSize:13, fontWeight:500, background:C.green, color:'#fff', padding:'10px 24px', borderRadius:7, display:'inline-block' }) }}>Try free for 24 hours →</a>
+            <a href="/pricing" style={{ ...D({ fontSize:13, color:C.textMid, border:`0.5px solid ${C.borderMid}`, padding:'10px 24px', borderRadius:7, display:'inline-block' }) }}>Full pricing details</a>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section style={{ padding:'100px 32px' }}>
         <div style={{ maxWidth:560, margin:'0 auto', textAlign:'center' }}>

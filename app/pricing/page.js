@@ -191,7 +191,12 @@ export default function PricingPage() {
           <span style={{ ...S({ fontSize:17, fontWeight:700, letterSpacing:'-0.3px', color:C.text }) }}>Ken<span style={{ color:C.green }}>op</span></span>
           <span style={{ ...M({ fontSize:9, color:C.textLight, letterSpacing:'0.1em' }) }}>INTELLIGENCE</span>
         </div>
-        <button onClick={() => router.push('/onboard')} style={{ ...D({ fontSize:12, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'6px 16px', borderRadius:6, cursor:'pointer' }) }}>Onboard your plant →</button>
+        <div style={{ display:'flex', alignItems:'center', gap:20 }}>
+          {[['Home','/'],['Case studies','/#cases'],['Why Kenop','/#moat'],['Trial','/trial']].map(([l,h]) => (
+            <a key={l} href={h} style={{ ...D({ fontSize:13, color:C.textMid }) }} onMouseEnter={e=>e.target.style.color=C.text} onMouseLeave={e=>e.target.style.color=C.textMid}>{l}</a>
+          ))}
+          <button onClick={() => router.push('/onboard')} style={{ ...D({ fontSize:12, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'6px 16px', borderRadius:6, cursor:'pointer' }) }}>Onboard →</button>
+        </div>
       </nav>
 
       {/* Hero */}
