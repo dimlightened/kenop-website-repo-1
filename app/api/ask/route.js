@@ -155,7 +155,9 @@ async function saveClassification(clientId, conversationId, rawQuery, classifica
 
 export async function POST(request) {
   try {
-    const { message, clientId, conversationId } = await request.json()
+    const body = await request.json()
+const message = body.message || body.query || body.content || body.text
+const { clientId, conversationId } = body
 
     if (!message) return Response.json({ error: 'No message' }, { status: 400 })
 
