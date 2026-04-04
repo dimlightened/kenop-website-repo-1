@@ -99,7 +99,7 @@ function LoginForm() {
           {stage === 'enter' ? (
             <>
               <h2 style={s.h2}>Sign in</h2>
-              <p style={s.sub}>Enter your email. We will send a 6-digit code — no password needed.</p>
+              <p style={s.sub}>Enter your email. We will send a Verification code — no password needed.</p>
               <form onSubmit={sendCode}>
                 <input type="email" value={email} autoFocus required
                   onChange={e => setEmail(e.target.value)}
