@@ -121,14 +121,14 @@ function StartForm() {
                 <button type="submit" disabled={loading||!GSTIN_RE.test(form.gstin.toUpperCase())||!form.email} style={btn(loading||!GSTIN_RE.test(form.gstin.toUpperCase())||!form.email)}>
                   {loading ? 'Sending code...' : 'Send verification code'}
                 </button>
-                <p style={{fontSize:11,color:'#A09285',textAlign:'center',marginTop:12,fontWeight:300}}>6-digit code sent to your email</p>
+                <p style={{fontSize:11,color:'#A09285',textAlign:'center',marginTop:12,fontWeight:300}}>Verification code sent to your email</p>
               </form>
             </>
           ) : (
             <>
               <button onClick={()=>{setStage('form');setError('');setCode('')}} style={{background:'none',border:'none',color:'#A09285',cursor:'pointer',fontSize:13,padding:0,marginBottom:20,fontFamily:'inherit'}}>Back</button>
               <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:600,color:'#1C1611',marginBottom:6,letterSpacing:'-0.3px'}}>Verify your email</h2>
-              <p style={{fontSize:13,color:'#A09285',marginBottom:8,fontWeight:300,lineHeight:1.6}}>6-digit code sent to<br/><strong style={{color:'#1C1611'}}>{form.email}</strong></p>
+              <p style={{fontSize:13,color:'#A09285',marginBottom:8,fontWeight:300,lineHeight:1.6}}>Verification code sent to<br/><strong style={{color:'#1C1611'}}>{form.email}</strong></p>
               {co?.legalName && <div style={{fontSize:12,color:'#A09285',marginBottom:20,padding:'8px 12px',background:'rgba(29,158,117,0.06)',borderRadius:6,fontFamily:"'JetBrains Mono',monospace"}}>{co.tradeName||co.legalName} · {co.state}</div>}
               <form onSubmit={verifyOTP}>
                 <input type="text" autoFocus inputMode="numeric" placeholder="_ _ _ _ _ _ _ _" value={code}

@@ -116,7 +116,7 @@ function LoginForm() {
                 Back
               </button>
               <h2 style={s.h2}>Enter code</h2>
-              <p style={s.sub}>6-digit code sent to<br/><strong style={{color:'#1C1611'}}>{email}</strong></p>
+              <p style={s.sub}>Verification code sent to<br/><strong style={{color:'#1C1611'}}>{email}</strong></p>
               <form onSubmit={verify}>
                 <input type="text" value={code} autoFocus inputMode="numeric"
                   onChange={e => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
