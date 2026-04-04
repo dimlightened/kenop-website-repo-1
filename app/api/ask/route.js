@@ -7,144 +7,149 @@ const supabase = createClient(
 
 export async function POST(request) {
   try {
-    const body = await request.json()
-    const { message, question, client_id } = body
-    const query = message || question
+    const { message, clientId } = await request.json()
+    if (!message) return Response.json({ error: 'Message required' }, { status: 400 })
 
-    if (!query) return Response.json({ error: 'No message' }, { status: 400 })
+    // Get client details and vertical
+    const { data: client } = await supabase
+      .from('clients')
+      .select('id, name, vertical, status')
+      .eq('id', clientId)
+      .single()
 
-    // Get client context
-    let clientContext = ''
-    let docContext = ''
-    let clientIdToUse = client_id
+    // Check trial/subscription status
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('tier, status, trial_expires_at, queries_used_this_cycle, max_queries_per_month')
+      .eq('client_id', clientId)
+      .single()
 
-    if (!clientIdToUse) {
-      const token = request.headers.get('authorization')?.replace('Bearer ', '')
-      if (token) {
-        const { data: { user } } = await createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        ).auth.getUser(token)
-        if (user) {
-          const { data: client } = await supabase.from('clients').select('id,name,vertical').eq('auth_user_id', user.id).single()
-          if (client) clientIdToUse = client.id
-        }
-      }
-    }
-
-    if (clientIdToUse) {
-      // Pull recent lab readings
-      const { data: readings } = await supabase
-        .from('lab_readings')
-        .select('*')
-        .eq('client_id', clientIdToUse)
-        .order('recorded_at', { ascending: false })
-        .limit(10)
-
-      if (readings?.length) {
-        clientContext = 'RECENT LAB READINGS:\n' + readings.map(r =>
-          `${r.recorded_at?.slice(0,10)}: FFA ${r.ffa_pct || '-'}% | Temp ${r.temp_c || '-'}°C | Colour ${r.colour_lovibond || '-'} | Yield ${r.yield_pct || '-'}%`
-        ).join('\n')
-      }
-
-      // Pull extracted document context — THIS IS THE KEY ADDITION
-      const { data: docs } = await supabase
-        .from('client_files')
-        .select('file_name, doc_category, summary, extracted_text')
-        .eq('client_id', clientIdToUse)
-        .eq('processed', true)
-        .not('summary', 'is', null)
-        .order('created_at', { ascending: false })
-        .limit(10)
-
-      if (docs?.length) {
-        docContext = '\nPLANT DOCUMENTS ON FILE:\n' + docs.map(d =>
-          `[${d.doc_category?.toUpperCase()}] ${d.file_name}:\n${d.summary}`
-        ).join('\n\n')
-
-        // For specific questions, include full extracted text of relevant docs
-        const queryLower = query.toLowerCase()
-        const relevantDocs = docs.filter(d => {
-          if (queryLower.includes('acid') && d.doc_category === 'lab_report') return true
-          if (queryLower.includes('pump') && d.doc_category === 'equipment_spec') return true
-          if (queryLower.includes('manual') && d.doc_category === 'operations_manual') return true
-          if (queryLower.includes('pid') && d.doc_category === 'pid') return true
-          return false
-        })
-
-        if (relevantDocs.length) {
-          docContext += '\n\nRELEVANT DOCUMENT DETAILS:\n' + relevantDocs.map(d =>
-            `${d.file_name}:\n${d.extracted_text?.slice(0, 1500)}`
-          ).join('\n---\n')
+    if (subscription) {
+      // Check trial expiry
+      if (subscription.tier === 'free_trial' && subscription.trial_expires_at) {
+        if (new Date(subscription.trial_expires_at) < new Date()) {
+          return Response.json({ error: 'Trial expired. Please contact us to continue.' }, { status: 403 })
         }
       }
 
-      // Acid oil batches
-      const { data: aoBatches } = await supabase
-        .from('acidoil_batches')
-        .select('*')
-        .eq('client_id', clientIdToUse)
-        .order('recorded_at', { ascending: false })
-        .limit(5)
-
-      if (aoBatches?.length) {
-        clientContext += '\n\nRECENT ACID OIL BATCHES:\n' + aoBatches.map(a =>
-          `${a.recorded_at?.slice(0,10)}: AV ${a.av || '-'} | FM ${a.fatty_matter_pct || '-'}% | FFA ${a.ffa_pct || '-'}%`
-        ).join('\n')
+      // Check query limits
+      if (subscription.max_queries_per_month > 0 &&
+          subscription.queries_used_this_cycle >= subscription.max_queries_per_month) {
+        return Response.json({ error: `Query limit reached (${subscription.max_queries_per_month}/month). Upgrade to continue.` }, { status: 429 })
       }
     }
 
-    const systemPrompt = `You are Kenop Intelligence — an AI process monitoring assistant specialised in edible oil refining and biodiesel production. You have access to this plant's actual data and documents.
+    // Get recent lab data for context
+    const { data: labData } = await supabase
+      .from('lab_readings')
+      .select('parameter_name, value, unit, recorded_at')
+      .eq('client_id', clientId)
+      .order('recorded_at', { ascending: false })
+      .limit(20)
 
-${clientContext}
-${docContext}
+    // Get client benchmarks
+    const { data: benchmarks } = await supabase
+      .from('client_benchmarks')
+      .select('parameter_name, target_value, unit')
+      .eq('client_id', clientId)
+      .limit(10)
 
-Answer questions using the plant's actual data above. Be specific — reference actual numbers, dates, readings from their documents and lab data. If you see a deviation from industry benchmarks, name it. If the documents mention specific equipment or process parameters, use them in your answer.
+    // Build context
+    const vertical = client?.vertical || 'edible_oil'
+    const verticalLabel = vertical === 'biodiesel' ? 'Biodiesel Plant' : 'Edible Oil Refinery'
 
-Keep answers concise and actionable. Always ground your answer in their actual data — never give generic advice when plant-specific data is available.`
+    const labContext = labData?.length
+      ? `Recent lab readings:\n${labData.map(r => `${r.parameter_name}: ${r.value} ${r.unit || ''} (${new Date(r.recorded_at).toLocaleDateString('en-IN')})`).join('\n')}`
+      : 'No recent lab readings available.'
 
-    // Route to appropriate model
-    const useGroq = true // Switch to local Llama when workstation ready
+    const benchmarkContext = benchmarks?.length
+      ? `Plant benchmarks:\n${benchmarks.map(b => `${b.parameter_name}: ${b.target_value} ${b.unit || ''}`).join('\n')}`
+      : ''
 
-    let answer = ''
+    const systemPrompt = `You are Kenop Intelligence, an expert process consultant for ${verticalLabel}s in India.
 
-    if (useGroq) {
-      const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+You have deep expertise in oleochemical processes, refinery operations, and process optimization.
+You combine domain expertise with this plant's actual data to give specific, actionable guidance.
+You can discuss general knowledge but always connect it back to process context when relevant.
+Never make up specific numbers — only cite numbers from the plant data provided below.
+
+Plant: ${client?.name || 'Unknown'}
+Vertical: ${verticalLabel}
+
+${labContext}
+
+${benchmarkContext}`
+
+    // Select model based on vertical
+    const togetherKey = process.env.TOGETHER_API_KEY
+    const model = vertical === 'biodiesel'
+      ? (process.env.TOGETHER_MODEL_BD || 'Qwen/Qwen3-8B')
+      : (process.env.TOGETHER_MODEL_NU || 'Qwen/Qwen3-8B')
+
+    // Use Together AI if key available, else fall back to Groq
+    let response, aiText
+
+    if (togetherKey) {
+      response = await fetch('https://api.together.xyz/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+          'Authorization': `Bearer ${togetherKey}`,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model,
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: query }
+            { role: 'user', content: message }
           ],
-          max_tokens: 1000,
+          max_tokens: 1024,
           temperature: 0.3
         })
       })
-      const groqData = await groqRes.json()
-      answer = groqData.choices?.[0]?.message?.content || 'No response'
+      const data = await response.json()
+      aiText = data.choices?.[0]?.message?.content || 'No response generated.'
+    } else {
+      // Fallback to Groq
+      response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: message }
+          ],
+          max_tokens: 1024,
+          temperature: 0.3
+        })
+      })
+      const data = await response.json()
+      aiText = data.choices?.[0]?.message?.content || 'No response generated.'
     }
 
-    // Log conversation
-    if (clientIdToUse) {
-      await supabase.from('conversations').insert({
-        client_id: clientIdToUse,
-        question: query,
-        answer,
-        source: 'dashboard',
-        has_doc_context: !!docContext,
-        created_at: new Date().toISOString()
-      }).catch(() => {})
-    }
+    // Log query and increment counter
+    await supabase.from('query_logs').insert({
+      client_id: clientId,
+      query_type: 'ai_chat',
+      tokens_used: aiText.length / 4
+    })
 
-    return Response.json({ answer, has_doc_context: !!docContext })
+    await supabase.from('subscriptions')
+      .update({ queries_used_this_cycle: (subscription?.queries_used_this_cycle || 0) + 1 })
+      .eq('client_id', clientId)
+
+    return Response.json({
+      response: aiText,
+      model: model,
+      queriesUsed: (subscription?.queries_used_this_cycle || 0) + 1,
+      queriesLimit: subscription?.max_queries_per_month || 250
+    })
 
   } catch (err) {
-    console.error('Ask API error:', err)
-    return Response.json({ error: 'Server error' }, { status: 500 })
+    console.error('Ask route error:', err)
+    return Response.json({ error: err.message }, { status: 500 })
   }
 }
