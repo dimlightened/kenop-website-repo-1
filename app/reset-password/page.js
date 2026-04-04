@@ -1,113 +1,69 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
+import { useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@supabase/supabase-js'
 
-export default function ResetPassword() {
+const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+const G = '#1D9E75'
+
+function ResetForm() {
+  const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
+  const [done, setDone] = useState(false)
 
-  const C = { bg:'#F8F5EF', card:'#FFFFFF', border:'rgba(28,22,17,0.09)',
-    text:'#1C1611', light:'#A09285', green:'#1D9E75' }
-
-  useEffect(() => {
-    // Supabase sends tokens in the URL hash — this handles the session
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        // User is authenticated via the reset link — ready to set new password
-      }
-    })
-  }, [])
+  const inp = {width:'100%',padding:'12px 16px',fontSize:15,border:'0.5px solid rgba(28,22,17,0.12)',borderRadius:10,background:'#F8F5EF',color:'#1C1611',boxSizing:'border-box',outline:'none',fontFamily:'inherit',marginBottom:14,display:'block'}
 
   const submit = async (e) => {
     e.preventDefault()
-    if (password !== confirm) { setError('Passwords do not match'); return }
-    if (password.length < 8) { setError('Password must be at least 8 characters'); return }
+    if (password !== confirm) { setError('Passwords do not match.'); return }
+    if (password.length < 8) { setError('Min. 8 characters.'); return }
     setLoading(true); setError('')
-    const { error } = await supabase.auth.updateUser({ password })
-    if (error) { setError(error.message); setLoading(false) }
-    else setDone(true)
+    try {
+      const { error } = await sb.auth.updateUser({ password })
+      if (error) throw error
+      setDone(true)
+      setTimeout(() => router.push('/login'), 2500)
+    } catch (err) { setError(err.message) } finally { setLoading(false) }
   }
 
   return (
-    <div style={{minHeight:'100vh',background:C.bg,display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
+    <div style={{minHeight:'100vh',background:'#F8F5EF',display:'flex',alignItems:'center',justifyContent:'center',padding:24,fontFamily:"'DM Sans',system-ui,sans-serif"}}>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" />
       <div style={{width:'100%',maxWidth:400}}>
-        <div style={{textAlign:'center',marginBottom:36}}>
-          <span style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:26,fontWeight:700,color:C.text}}>
-            Ken<span style={{color:C.green}}>op</span>
-          </span>
+        <div style={{textAlign:'center',marginBottom:40}}>
+          <span style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:28,fontWeight:700,color:'#1C1611'}}>Ken<span style={{color:G}}>op</span></span>
         </div>
-
-        <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:14,padding:'32px 28px'}}>
-          {done ? (
-            <div style={{textAlign:'center'}}>
-              <div style={{fontSize:32,marginBottom:16}}>✅</div>
-              <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:600,color:C.text,marginBottom:10}}>
-                Password updated
-              </h2>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.light,fontWeight:300,marginBottom:24}}>
-                Your password has been changed successfully.
-              </p>
-              <button onClick={()=>router.push('/dashboard')}
-                style={{padding:'10px 24px',background:C.green,color:'#fff',border:'none',
-                  borderRadius:8,fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:500,cursor:'pointer'}}>
-                Go to dashboard
-              </button>
-            </div>
-          ) : (
+        <div style={{background:'#fff',border:'0.5px solid rgba(28,22,17,0.09)',borderRadius:16,padding:'36px 32px'}}>
+          {!done ? (
             <>
-              <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:600,color:C.text,marginBottom:6,letterSpacing:'-0.3px'}}>
-                Set new password
-              </h2>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.light,marginBottom:24,fontWeight:300}}>
-                Choose a strong password for your account
-              </p>
+              <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:600,color:'#1C1611',margin:'0 0 6px'}}>New password</h2>
+              <p style={{fontSize:14,color:'#A09285',margin:'6px 0 24px',fontWeight:300}}>Choose a new password for your account.</p>
               <form onSubmit={submit}>
-                <div style={{marginBottom:16}}>
-                  <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:C.light,letterSpacing:'0.12em',display:'block',marginBottom:6}}>
-                    NEW PASSWORD
-                  </label>
-                  <input
-                    type="password" value={password} onChange={e=>setPassword(e.target.value)}
-                    placeholder="Min. 8 characters" required
-                    style={{width:'100%',padding:'10px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:14,
-                      border:`0.5px solid ${C.border}`,borderRadius:8,background:C.bg,color:C.text,
-                      boxSizing:'border-box'}}
-                  />
-                </div>
-                <div style={{marginBottom:20}}>
-                  <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:C.light,letterSpacing:'0.12em',display:'block',marginBottom:6}}>
-                    CONFIRM PASSWORD
-                  </label>
-                  <input
-                    type="password" value={confirm} onChange={e=>setConfirm(e.target.value)}
-                    placeholder="Repeat password" required
-                    style={{width:'100%',padding:'10px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:14,
-                      border:`0.5px solid ${C.border}`,borderRadius:8,background:C.bg,color:C.text,
-                      boxSizing:'border-box'}}
-                  />
-                </div>
-                {error && (
-                  <div style={{background:'#FEF2F2',border:'0.5px solid rgba(220,38,38,0.2)',borderRadius:8,
-                    padding:'10px 14px',marginBottom:16,fontFamily:"'DM Sans',sans-serif",fontSize:13,color:'#DC2626'}}>
-                    {error}
-                  </div>
-                )}
+                <input type="password" required autoFocus placeholder="New password (min. 8 chars)" minLength={8} value={password} onChange={e=>setPassword(e.target.value)} style={inp} />
+                <input type="password" required placeholder="Confirm password" value={confirm} onChange={e=>setConfirm(e.target.value)} style={{...inp,marginBottom:16}} />
+                {error && <div style={{background:'#FEF2F2',borderRadius:8,padding:'10px 14px',marginBottom:16,fontSize:13,color:'#DC2626'}}>{error}</div>}
                 <button type="submit" disabled={loading}
-                  style={{width:'100%',padding:'11px',background:C.green,color:'#fff',border:'none',
-                    borderRadius:8,fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:500,
-                    cursor:loading?'not-allowed':'pointer',opacity:loading?0.7:1}}>
-                  {loading ? 'Updating...' : 'Update password'}
+                  style={{width:'100%',padding:'13px',background:loading?'#A8D5C4':G,color:'#fff',border:'none',borderRadius:10,fontSize:15,fontWeight:500,fontFamily:'inherit',cursor:loading?'not-allowed':'pointer'}}>
+                  {loading ? 'Updating...' : 'Set new password'}
                 </button>
               </form>
             </>
+          ) : (
+            <div style={{textAlign:'center'}}>
+              <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:600,color:G,marginBottom:8}}>Password updated</h2>
+              <p style={{fontSize:14,color:'#A09285',fontWeight:300}}>Redirecting to login...</p>
+            </div>
           )}
         </div>
+        <p style={{textAlign:'center',fontSize:11,color:'#A09285',marginTop:20,fontWeight:300}}>E-Shakti Binary Currents Pvt. Ltd.</p>
       </div>
     </div>
   )
+}
+
+export default function ResetPassword() {
+  return <Suspense fallback={<div style={{minHeight:'100vh',background:'#F8F5EF'}}/>}><ResetForm /></Suspense>
 }
