@@ -135,7 +135,7 @@ function StartForm() {
                   onChange={e=>setCode(e.target.value.replace(/[^0-9]/g,'').slice(0,8))}
                   style={{...inp,fontFamily:"'JetBrains Mono',monospace",fontSize:30,letterSpacing:14,textAlign:'center',marginBottom:16}} />
                 {error && <div style={{background:'#FEF2F2',border:'0.5px solid rgba(220,38,38,0.15)',borderRadius:8,padding:'10px 14px',marginBottom:14,fontSize:13,color:'#DC2626'}}>{error}</div>}
-                <button type="submit" disabled={loading||code.length<8} style={btn(loading||code.length<8)}>
+                <button type="submit" disabled={loading||code.length<6} style={btn(loading||code.length<6)}>
                   {loading ? 'Verifying...' : 'Verify and continue'}
                 </button>
                 <button type="button" onClick={()=>{setStage('form');setCode('');setError('')}}
