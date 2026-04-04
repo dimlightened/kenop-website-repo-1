@@ -9,7 +9,7 @@ const supabase = createClient(
 )
 
 function LoginForm() {
-  const [identifier, setIdentifier] = useState('')
+  const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [stage, setStage] = useState('enter')
   const [loading, setLoading] = useState(false)
@@ -18,18 +18,13 @@ function LoginForm() {
   const params = useSearchParams()
   const next = params.get('next') || '/dashboard'
 
-  const C = { bg:'#F8F5EF', card:'#FFFFFF', border:'rgba(28,22,17,0.09)', text:'#1C1611', light:'#A09285', green:'#1D9E75' }
-  const isEmail = (v) => /^[^@]+@[^@]+[.][^@]+$/.test(v.trim())
-
   const sendCode = async (e) => {
     e.preventDefault()
-    const val = identifier.trim()
-    if (!val) return
+    if (!email.trim()) return
     setLoading(true); setError('')
     try {
-      if (!isEmail(val)) throw new Error('Enter a valid email address')
       const { error } = await supabase.auth.signInWithOtp({
-        email: val,
+        email: email.trim(),
         options: { shouldCreateUser: false }
       })
       if (error) throw error
@@ -41,88 +36,119 @@ function LoginForm() {
     } finally { setLoading(false) }
   }
 
-  const verifyCode = async (e) => {
+  const verify = async (e) => {
     e.preventDefault()
     if (code.length < 6) return
     setLoading(true); setError('')
     try {
       const { error } = await supabase.auth.verifyOtp({
-        email: identifier.trim(), token: code, type: 'email'
+        email: email.trim(), token: code, type: 'email'
       })
       if (error) throw error
       router.push(next)
     } catch (err) {
-      setError('Incorrect code. Check and try again.')
+      setError('Incorrect code. Try again.')
       setCode('')
     } finally { setLoading(false) }
   }
 
-  const inp = { width:'100%', padding:'12px 16px', fontFamily:"'DM Sans',sans-serif",
-    fontSize:15, border:'0.5px solid rgba(28,22,17,0.12)', borderRadius:10,
-    background:'#F8F5EF', color:'#1C1611', boxSizing:'border-box', outline:'none' }
-
-  const btn = (disabled) => ({ width:'100%', padding:'13px',
-    background: disabled ? '#A8D5C4' : '#1D9E75', color:'#fff', border:'none',
-    borderRadius:10, fontFamily:"'DM Sans',sans-serif", fontSize:15, fontWeight:500,
-    cursor: disabled ? 'not-allowed' : 'pointer' })
+  const green = '#1D9E75'
+  const s = {
+    page: { minHeight:'100vh', background:'#F8F5EF', display:'flex',
+      alignItems:'center', justifyContent:'center', padding:24,
+      fontFamily:"'DM Sans', system-ui, sans-serif" },
+    wrap: { width:'100%', maxWidth:400 },
+    logo: { textAlign:'center', marginBottom:40,
+      fontSize:28, fontWeight:700, color:'#1C1611', letterSpacing:'-0.5px' },
+    card: { background:'#fff', border:'0.5px solid rgba(28,22,17,0.09)',
+      borderRadius:16, padding:'36px 32px',
+      boxShadow:'0 2px 24px rgba(28,22,17,0.06)' },
+    h2: { fontSize:24, fontWeight:600, color:'#1C1611',
+      marginBottom:6, letterSpacing:'-0.4px', margin:'0 0 6px' },
+    sub: { fontSize:14, color:'#A09285', marginBottom:28,
+      fontWeight:300, lineHeight:1.6, margin:'6px 0 28px' },
+    inp: { width:'100%', padding:'12px 16px', fontSize:15,
+      border:'0.5px solid rgba(28,22,17,0.12)', borderRadius:10,
+      background:'#F8F5EF', color:'#1C1611', boxSizing:'border-box',
+      outline:'none', fontFamily:'inherit', marginBottom:16, display:'block' },
+    btn: (off) => ({ width:'100%', padding:'13px',
+      background: off ? '#A8D5C4' : green, color:'#fff', border:'none',
+      borderRadius:10, fontSize:15, fontWeight:500, fontFamily:'inherit',
+      cursor: off ? 'not-allowed' : 'pointer' }),
+    err: { background:'#FEF2F2', border:'0.5px solid rgba(220,38,38,0.15)',
+      borderRadius:8, padding:'10px 14px', marginBottom:16,
+      fontSize:13, color:'#DC2626' },
+    back: { background:'none', border:'none', color:'#A09285', cursor:'pointer',
+      fontSize:13, padding:0, marginBottom:20, fontFamily:'inherit' },
+    ghost: { width:'100%', padding:'10px', background:'none', border:'none',
+      fontSize:13, color:'#A09285', cursor:'pointer',
+      marginTop:8, fontFamily:'inherit' },
+    foot: { textAlign:'center', fontSize:11, color:'#A09285',
+      marginTop:20, fontWeight:300 }
+  }
 
   return (
-    <div style={{minHeight:'100vh',background:C.bg,display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
-      <div style={{width:'100%',maxWidth:400}}>
-        <div style={{textAlign:'center',marginBottom:40}}>
-          <span style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:28,fontWeight:700,color:C.text}}>
-            Ken<span style={{color:C.green}}>op</span>
-          </span>
+    <div style={s.page}>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" />
+      <div style={s.wrap}>
+        <div style={s.logo}>
+          Ken<span style={{color:green}}>op</span>
         </div>
-        <div style={{background:C.card,border:'0.5px solid '+C.border,borderRadius:16,padding:'36px 32px',boxShadow:'0 2px 24px rgba(28,22,17,0.06)'}}>
+        <div style={s.card}>
           {stage === 'enter' ? (
             <>
-              <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:24,fontWeight:600,color:C.text,marginBottom:6,letterSpacing:'-0.4px'}}>Sign in</h2>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.light,marginBottom:28,fontWeight:300,lineHeight:1.6}}>
-                Enter your email. We will send a 6-digit code.
-              </p>
+              <h2 style={s.h2}>Sign in</h2>
+              <p style={s.sub}>Enter your email. We will send a 6-digit code — no password needed.</p>
               <form onSubmit={sendCode}>
-                <input type="email" value={identifier} onChange={e=>setIdentifier(e.target.value)}
-                  placeholder="you@yourplant.com" autoFocus style={{...inp, marginBottom:16}} />
-                {error && <div style={{background:'#FEF2F2',border:'0.5px solid rgba(220,38,38,0.15)',borderRadius:8,padding:'10px 14px',marginBottom:16,fontFamily:"'DM Sans',sans-serif",fontSize:13,color:'#DC2626'}}>{error}</div>}
-                <button type="submit" disabled={loading} style={btn(loading)}>
-                  {loading ? 'Sending code...' : 'Send code'}
+                <input type="email" value={email} autoFocus required
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="you@yourplant.com" style={s.inp} />
+                {error && <div style={s.err}>{error}</div>}
+                <button type="submit" disabled={loading} style={s.btn(loading)}>
+                  {loading ? 'Sending...' : 'Send code'}
                 </button>
               </form>
             </>
           ) : (
             <>
-              <button onClick={()=>{setStage('enter');setError('');setCode('')}}
-                style={{background:'none',border:'none',color:C.light,cursor:'pointer',fontFamily:"'DM Sans',sans-serif",fontSize:13,padding:0,marginBottom:20}}>
+              <button onClick={() => { setStage('enter'); setError(''); setCode('') }} style={s.back}>
                 Back
               </button>
-              <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:24,fontWeight:600,color:C.text,marginBottom:6,letterSpacing:'-0.4px'}}>Enter code</h2>
-              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.light,marginBottom:28,fontWeight:300,lineHeight:1.6}}>
-                6-digit code sent to<br/><strong style={{color:C.text}}>{identifier}</strong>
-              </p>
-              <form onSubmit={verifyCode}>
-                <input type="text" value={code} inputMode="numeric" autoFocus
-                  onChange={e=>setCode(e.target.value.replace(/[^0-9]/g,'').slice(0,6))}
+              <h2 style={s.h2}>Enter code</h2>
+              <p style={s.sub}>6-digit code sent to<br/><strong style={{color:'#1C1611'}}>{email}</strong></p>
+              <form onSubmit={verify}>
+                <input type="text" value={code} autoFocus inputMode="numeric"
+                  onChange={e => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
                   placeholder="000000"
-                  style={{...inp, fontFamily:"'JetBrains Mono',monospace", fontSize:28, letterSpacing:12, textAlign:'center', marginBottom:16}} />
-                {error && <div style={{background:'#FEF2F2',border:'0.5px solid rgba(220,38,38,0.15)',borderRadius:8,padding:'10px 14px',marginBottom:16,fontFamily:"'DM Sans',sans-serif",fontSize:13,color:'#DC2626'}}>{error}</div>}
-                <button type="submit" disabled={loading||code.length<6} style={btn(loading||code.length<6)}>
+                  style={{...s.inp, fontFamily:"'JetBrains Mono', monospace",
+                    fontSize:32, letterSpacing:14, textAlign:'center'}} />
+                {error && <div style={s.err}>{error}</div>}
+                <button type="submit" disabled={loading || code.length < 6}
+                  style={s.btn(loading || code.length < 6)}>
                   {loading ? 'Verifying...' : 'Verify'}
                 </button>
-                <button type="button" onClick={()=>{setStage('enter');setCode('');setError('')}}
-                  style={{width:'100%',padding:'10px',background:'none',border:'none',fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.light,cursor:'pointer',marginTop:8}}>
+                <button type="button"
+                  onClick={() => { setStage('enter'); setCode(''); setError('') }}
+                  style={s.ghost}>
                   Did not receive it? Try again
                 </button>
               </form>
             </>
           )}
         </div>
-        <p style={{textAlign:'center',fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.light,marginTop:20,fontWeight:300}}>
-          E-Shakti Binary Currents Pvt. Ltd.
-        </p>
+        <p style={s.foot}>E-Shakti Binary Currents Pvt. Ltd.</p>
       </div>
     </div>
   )
 }
 
-export default function Login() { return <Suspense><LoginForm /></Suspense> }
+export default function Login() {
+  return <Suspense fallback={
+    <div style={{minHeight:'100vh', background:'#F8F5EF', display:'flex',
+      alignItems:'center', justifyContent:'center',
+      fontFamily:'system-ui', fontSize:28, fontWeight:700, color:'#1C1611'}}>
+      Ken<span style={{color:'#1D9E75'}}>op</span>
+    </div>
+  }><LoginForm /></Suspense>
+}
