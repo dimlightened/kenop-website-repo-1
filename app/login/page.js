@@ -10,53 +10,91 @@ export default function Login() {
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const login = async () => {
-    setLoading(true)
-    setError('')
+  const C = { bg:'#F8F5EF', card:'#FFFFFF', border:'rgba(28,22,17,0.09)',
+    text:'#1C1611', light:'#A09285', green:'#1D9E75', amber:'#B45309' }
+
+  const login = async (e) => {
+    e.preventDefault()
+    setLoading(true); setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    setLoading(false)
-    if (error) setError(error.message)
+    if (error) { setError(error.message); setLoading(false) }
     else router.push('/dashboard')
   }
 
   return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#F4F6F8',fontFamily:'sans-serif'}}>
-      <div style={{background:'white',padding:40,borderRadius:12,width:360,boxShadow:'0 2px 16px rgba(0,0,0,0.08)'}}>
-        <h2 style={{marginBottom:8,color:'#1B2A4A'}}>Kenop Intelligence</h2>
-        <p style={{marginBottom:28,color:'#888',fontSize:14}}>Sign in to your plant portal</p>
-
-        <div style={{marginBottom:16}}>
-          <label style={{display:'block',fontSize:13,color:'#555',marginBottom:6}}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={e=>setEmail(e.target.value)}
-            style={{width:'100%',padding:'10px 12px',fontSize:15,border:'1px solid #ddd',borderRadius:6,boxSizing:'border-box'}}
-            placeholder="operator@plant.com"
-          />
+    <div style={{minHeight:'100vh',background:C.bg,display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
+      <div style={{width:'100%',maxWidth:400}}>
+        {/* Logo */}
+        <div style={{textAlign:'center',marginBottom:36}}>
+          <span style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:26,fontWeight:700,color:C.text}}>
+            Ken<span style={{color:C.green}}>op</span>
+          </span>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.light,marginTop:6,fontWeight:300}}>
+            Plant Intelligence Platform
+          </p>
         </div>
 
-        <div style={{marginBottom:24}}>
-          <label style={{display:'block',fontSize:13,color:'#555',marginBottom:6}}>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={e=>setPassword(e.target.value)}
-            onKeyDown={e=>e.key==='Enter'&&login()}
-            style={{width:'100%',padding:'10px 12px',fontSize:15,border:'1px solid #ddd',borderRadius:6,boxSizing:'border-box'}}
-            placeholder="••••••••"
-          />
+        {/* Card */}
+        <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:14,padding:'32px 28px'}}>
+          <h2 style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:600,color:C.text,marginBottom:6,letterSpacing:'-0.3px'}}>
+            Sign in
+          </h2>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.light,marginBottom:24,fontWeight:300}}>
+            Access your plant dashboard
+          </p>
+
+          <form onSubmit={login}>
+            <div style={{marginBottom:16}}>
+              <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:C.light,letterSpacing:'0.12em',display:'block',marginBottom:6}}>
+                EMAIL
+              </label>
+              <input
+                type="email" value={email} onChange={e=>setEmail(e.target.value)}
+                placeholder="you@plant.com" required
+                style={{width:'100%',padding:'10px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:14,
+                  border:`0.5px solid ${C.border}`,borderRadius:8,background:C.bg,color:C.text,
+                  boxSizing:'border-box'}}
+              />
+            </div>
+            <div style={{marginBottom:8}}>
+              <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:C.light,letterSpacing:'0.12em',display:'block',marginBottom:6}}>
+                PASSWORD
+              </label>
+              <input
+                type="password" value={password} onChange={e=>setPassword(e.target.value)}
+                placeholder="••••••••" required
+                style={{width:'100%',padding:'10px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:14,
+                  border:`0.5px solid ${C.border}`,borderRadius:8,background:C.bg,color:C.text,
+                  boxSizing:'border-box'}}
+              />
+            </div>
+
+            {/* Forgot password link */}
+            <div style={{textAlign:'right',marginBottom:20}}>
+              <a href="/forgot-password" style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.green,textDecoration:'none'}}>
+                Forgot password?
+              </a>
+            </div>
+
+            {error && (
+              <div style={{background:'#FEF2F2',border:'0.5px solid rgba(220,38,38,0.2)',borderRadius:8,
+                padding:'10px 14px',marginBottom:16,fontFamily:"'DM Sans',sans-serif",fontSize:13,color:'#DC2626'}}>
+                {error}
+              </div>
+            )}
+
+            <button type="submit" disabled={loading}
+              style={{width:'100%',padding:'11px',background:C.green,color:'#fff',border:'none',
+                borderRadius:8,fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:500,
+                cursor:loading?'not-allowed':'pointer',opacity:loading?0.7:1}}>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
         </div>
 
-        {error && <p style={{color:'#c0392b',fontSize:13,marginBottom:16}}>{error}</p>}
-
-        <button
-          onClick={login}
-          disabled={loading}
-          style={{width:'100%',padding:14,background:'#1D9E75',color:'white',border:'none',borderRadius:8,fontSize:16,cursor:'pointer',fontWeight:600}}
-        >
-          {loading ? 'Signing in...' : 'Sign in'}
-        </button>
+        <p style={{textAlign:'center',fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.light,marginTop:20,fontWeight:300}}>
+          E-Shakti Binary Currents Pvt. Ltd.
+        </p>
       </div>
     </div>
   )
