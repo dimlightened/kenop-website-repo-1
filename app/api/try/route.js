@@ -65,22 +65,39 @@ Keep response under 250 words — crisp, expert, actionable.`
 
     let aiText
     if (togetherKey) {
-      const res = await fetch('https://api.together.xyz/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${togetherKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: question }
-          ],
-          max_tokens: 500,
-          temperature: 0.3
-        })
-      })
-      const d = await res.json()
-      aiText = d.choices?.[0]?.message?.content || 'No response generated.'
-    } else {
+      // Try fine-tuned model first, fall back to base Qwen, then Groq
+      const modelsToTry = [
+        model,
+        'Qwen/Qwen3-8B',
+      ].filter(Boolean)
+
+      for (const m of modelsToTry) {
+        try {
+          const res = await fetch('https://api.together.xyz/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${togetherKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: m,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: question }
+              ],
+              max_tokens: 500,
+              temperature: 0.3
+            })
+          })
+          const d = await res.json()
+          console.log('Together AI response model:', m, 'status:', res.status, 'error:', d.error)
+          aiText = d.choices?.[0]?.message?.content
+          if (aiText) break // Got a response, stop trying
+        } catch (e) {
+          console.error('Together AI error with model', m, e.message)
+        }
+      }
+    }
+
+    // Fallback to Groq if Together AI failed
+    if (!aiText) {
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}`, 'Content-Type': 'application/json' },
