@@ -38,7 +38,7 @@ function LoginForm() {
 
   const verify = async (e) => {
     e.preventDefault()
-    if (code.length < 6) return
+    if (code.length<8) return
     setLoading(true); setError('')
     try {
       const { error } = await supabase.auth.verifyOtp({
@@ -119,13 +119,13 @@ function LoginForm() {
               <p style={s.sub}>Verification code sent to<br/><strong style={{color:'#1C1611'}}>{email}</strong></p>
               <form onSubmit={verify}>
                 <input type="text" value={code} autoFocus inputMode="numeric"
-                  onChange={e => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                  onChange={e => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0,8))}
                   placeholder="_ _ _ _ _ _ _ _"
                   style={{...s.inp, fontFamily:"'JetBrains Mono', monospace",
                     fontSize:32, letterSpacing:14, textAlign:'center'}} />
                 {error && <div style={s.err}>{error}</div>}
-                <button type="submit" disabled={loading || code.length < 6}
-                  style={s.btn(loading || code.length < 6)}>
+                <button type="submit" disabled={loading || code.length<8}
+                  style={s.btn(loading || code.length<8)}>
                   {loading ? 'Verifying...' : 'Verify'}
                 </button>
                 <button type="button"
