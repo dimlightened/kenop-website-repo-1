@@ -120,7 +120,7 @@ function LoginForm() {
               <form onSubmit={verify}>
                 <input type="text" value={code} autoFocus inputMode="numeric"
                   onChange={e => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
-                  placeholder="000000"
+                  placeholder="_ _ _ _ _ _ _ _"
                   style={{...s.inp, fontFamily:"'JetBrains Mono', monospace",
                     fontSize:32, letterSpacing:14, textAlign:'center'}} />
                 {error && <div style={s.err}>{error}</div>}
