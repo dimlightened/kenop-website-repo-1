@@ -248,10 +248,21 @@ export default function EdibleOilOnboarding() {
   const [dataConfig, setDataConfig] = useState({ automation_level:'manual', plc_make:'', data_entry_method:'excel', whatsapp_number:'', reading_frequency_hrs:'2' })
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data:{ session } }) => {
+    supabase.auth.getSession().then(async ({ data:{ session } }) => {
       if (!session) { router.push('/login'); return }
-      supabase.from('clients').select('*').eq('auth_user_id', session.user.id).single()
-        .then(({ data }) => { if (data) { setClient(data); setBasics(b => ({ ...b, name:data.name||'', location:data.location||'', contact_name:data.contact_name||'' })) } })
+      let { data: cl } = await supabase.from('clients').select('*').eq('auth_user_id', session.user.id).single()
+      if (!cl) {
+        const { data: nc } = await supabase.from('clients').insert({
+          name: session.user.user_metadata?.company || session.user.email,
+          email: session.user.email,
+          auth_user_id: session.user.id,
+          contact_name: session.user.user_metadata?.name || '',
+          whatsapp: session.user.user_metadata?.whatsapp || '',
+          vertical: 'edible_oil'
+        }).select().single()
+        cl = nc
+      }
+      if (cl) { setClient(cl); setBasics(b => ({ ...b, name:cl.name||'', location:cl.location||'', contact_name:cl.contact_name||'' })) }
     })
   }, [])
 
