@@ -78,7 +78,7 @@ export default function TrialPage() {
         <div onClick={() => router.push('/')} style={{ cursor:'pointer', ...S({ fontSize:17, fontWeight:700, color:C.text }) }}>
           Ken<span style={{ color:C.green }}>op</span>
         </div>
-        <span style={{ ...M({ fontSize:10, color:C.textLight }) }}>3-DAY FREE TRIAL</span>
+        <span style={{ ...M({ fontSize:10, color:C.textLight }) }}>72-HOUR FREE TRIAL</span>
       </nav>
 
       <div style={{ maxWidth:520, margin:'0 auto', padding:'48px 24px' }}>
@@ -94,10 +94,10 @@ export default function TrialPage() {
         {step === 1 && (
           <form onSubmit={handleDetailsSubmit}>
             <h1 style={{ ...S({ fontSize:30, fontWeight:700, lineHeight:1.1, letterSpacing:'-0.5px', marginBottom:8, color:C.text }) }}>
-              Try Kenop free<br />for 3 days
+              Try Kenop free<br />for 72 hours
             </h1>
             <p style={{ ...D({ fontSize:14, color:C.textMid, lineHeight:1.7, marginBottom:28, fontWeight:300 }) }}>
-              Full Pro access. We capture billing details but charge nothing today. After 3 days, continue or cancel — your call.
+              Full Pro access. We capture billing details but charge nothing today. After 72 hours, continue or cancel — your call.
             </p>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:0 }}>
               <Field label="Your name" id="name" value={form.name} onChange={set('name')} placeholder="Your name" required />
@@ -123,7 +123,7 @@ export default function TrialPage() {
             <button type="submit" style={{ width:'100%', padding:'13px', background:C.green, border:'none', borderRadius:8, fontSize:14, fontWeight:500, color:'#fff', cursor:'pointer', ...D() }}>
               Continue to billing details \u2192
             </button>
-            <p style={{ ...D({ fontSize:11, color:C.textLight, textAlign:'center', marginTop:10 }) }}>No charge today. Cancel anytime within 3 days.</p>
+            <p style={{ ...D({ fontSize:11, color:C.textLight, textAlign:'center', marginTop:10 }) }}>No charge today. Cancel anytime within 72 hours.</p>
           </form>
         )}
 
@@ -131,7 +131,7 @@ export default function TrialPage() {
           <div>
             <h1 style={{ ...S({ fontSize:28, fontWeight:700, lineHeight:1.1, letterSpacing:'-0.5px', marginBottom:8, color:C.text }) }}>Billing details</h1>
             <p style={{ ...D({ fontSize:14, color:C.textMid, lineHeight:1.7, marginBottom:24, fontWeight:300 }) }}>
-              We hold your payment method on file. Nothing is charged today. After 3 days, you choose to continue or cancel.
+              We hold your payment method on file. Nothing is charged today. After 72 hours, you choose to continue or cancel.
             </p>
             <div style={{ background:C.greenLight, border:`0.5px solid ${C.greenBorder}`, borderRadius:10, padding:'16px 18px', marginBottom:16 }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
@@ -139,7 +139,7 @@ export default function TrialPage() {
                 <span style={{ ...M({ fontSize:13, color:C.green }) }}>\u20b90 today</span>
               </div>
               <div style={{ ...D({ fontSize:11, color:'#085041', lineHeight:1.6 }) }}>
-                After 3 days: \u20b9{planPrice}/month if you continue. Cancel before then \u2014 zero charge.
+                After 72 hours: \u20b9{planPrice}/month if you continue. Cancel before then \u2014 zero charge.
               </div>
               <div style={{ marginTop:10, display:'flex', flexWrap:'wrap', gap:6 }}>
                 {['1,500 AI queries/week','2 users','Priority intelligence','Daily morning report','WhatsApp alerts'].map(f => (
@@ -149,7 +149,7 @@ export default function TrialPage() {
             </div>
             <div style={{ background:'#FEF8EE', border:'0.5px solid rgba(180,83,9,0.2)', borderRadius:10, padding:'14px 16px', marginBottom:24 }}>
               <p style={{ ...D({ fontSize:12, color:C.amber, lineHeight:1.65 }) }}>
-                Your card is authorised but <strong>not charged</strong> today. First charge of \u20b9{planPrice} only occurs if you confirm after 3 days. Cancel by replying STOP to WhatsApp.
+                Your card is authorised but <strong>not charged</strong> today. First charge of \u20b9{planPrice} only occurs if you confirm after 72 hours. Cancel by replying STOP to WhatsApp.
               </p>
             </div>
             {error && <p style={{ ...D({ fontSize:12, color:'#E24B4A', marginBottom:12 }) }}>{error}</p>}
@@ -168,7 +168,7 @@ export default function TrialPage() {
             <div style={{ width:64, height:64, borderRadius:'50%', background:C.greenLight, border:`2px solid ${C.green}`, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', fontSize:28 }}>&#10003;</div>
             <h1 style={{ ...S({ fontSize:30, fontWeight:700, lineHeight:1.1, letterSpacing:'-0.5px', marginBottom:12, color:C.text }) }}>Your trial is live.</h1>
             <p style={{ ...D({ fontSize:15, color:C.textMid, lineHeight:1.7, marginBottom:8, fontWeight:300 }) }}>
-              3 days of full Pro access. Your first morning report arrives before 6am tomorrow on WhatsApp.
+              72 hours of full Pro access. Your first morning report arrives before 6am tomorrow on WhatsApp.
             </p>
             <p style={{ ...D({ fontSize:13, color:C.textLight, lineHeight:1.6, marginBottom:32, fontWeight:300 }) }}>
               Complete onboarding now \u2014 it takes 20 minutes and is how Kenop learns your plant.

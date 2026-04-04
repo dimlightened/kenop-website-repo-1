@@ -195,7 +195,7 @@ export default function PricingPage() {
           {[['Home','/'],['Case studies','/#cases'],['Why Kenop','/#moat'],['Trial','/trial']].map(([l,h]) => (
             <a key={l} href={h} style={{ ...D({ fontSize:13, color:C.textMid }) }} onMouseEnter={e=>e.target.style.color=C.text} onMouseLeave={e=>e.target.style.color=C.textMid}>{l}</a>
           ))}
-          <button onClick={() => router.push('/start')} style={{ ...D({ fontSize:12, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'6px 16px', borderRadius:6, cursor:'pointer' }) }}>Onboard →</button>
+          <button onClick={() => router.push('/start')} style={{ ...D({ fontSize:12, fontWeight:500, background:C.green, border:'none', color:'#fff', padding:'6px 16px', borderRadius:6, cursor:'pointer' }) }}>Start 72-hr free trial →</button>
         </div>
       </nav>
 

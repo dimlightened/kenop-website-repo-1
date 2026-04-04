@@ -228,7 +228,7 @@ export default function LandingPage() {
       finding:'Temperature had been set for a flavour spec the plant no longer supplied. The customer changed two years earlier but deodorisation conditions were never revised. Tocopherols were degrading before reaching the distillate. The plant was selling DOD at 7% tocopherol when 8%+ was achievable.',
       intervention:'Analysed 45 batches against temperature, vacuum, and stripping steam. Brought temperature down 8°C, tightened residence time. Refined oil FFA specification maintained throughout.',
       result:'DOD tocopherol from 7% to 8.2–8.4%. Buyer repriced upward. Same equipment, same feedstock, higher-value product. Three days to implement.',
-      numbers:[['7% → 8.4%','Tocopherol in DOD'],['₹0','Equipment added'],['3 days','To implement']],
+      numbers:[['7% → 8.4%','Tocopherol in DOD'],['₹0','Equipment added'],['72 hours','To implement']],
     },
     {
       tag:'Biodiesel · Tallow feedstock · 20 TPD',
@@ -580,7 +580,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
-            <a href="/trial" style={{ ...D({ fontSize:13, fontWeight:500, background:C.green, color:'#fff', padding:'10px 24px', borderRadius:7, display:'inline-block' }) }}>Try free for 24 hours →</a>
+            <a href="/signup" style={{ ...D({ fontSize:13, fontWeight:500, background:C.green, color:'#fff', padding:'10px 24px', borderRadius:7, display:'inline-block' }) }}>Try free for 72 hours →</a>
             <a href="/pricing" style={{ ...D({ fontSize:13, color:C.textMid, border:`0.5px solid ${C.borderMid}`, padding:'10px 24px', borderRadius:7, display:'inline-block' }) }}>Full pricing details</a>
           </div>
         </div>
