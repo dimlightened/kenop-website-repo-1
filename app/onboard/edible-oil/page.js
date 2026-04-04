@@ -153,7 +153,6 @@ const FEEDSTOCK_TYPES = [
   'Mustard crude oil',
   'Corn crude oil',
   'Soapstock (from refinery)',
-  'Acid oil (purchased)',
   'Other',
 ]
 
