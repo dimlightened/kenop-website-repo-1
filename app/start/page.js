@@ -131,11 +131,11 @@ function StartForm() {
               <p style={{fontSize:13,color:'#A09285',marginBottom:8,fontWeight:300,lineHeight:1.6}}>Verification code sent to<br/><strong style={{color:'#1C1611'}}>{form.email}</strong></p>
               {co?.legalName && <div style={{fontSize:12,color:'#A09285',marginBottom:20,padding:'8px 12px',background:'rgba(29,158,117,0.06)',borderRadius:6,fontFamily:"'JetBrains Mono',monospace"}}>{co.tradeName||co.legalName} · {co.state}</div>}
               <form onSubmit={verifyOTP}>
-                <input type="text" autoFocus inputMode="numeric" placeholder="_ _ _ _ _ _ _ _" value={code}
+                <input type="text" autoFocus inputMode="numeric" placeholder="- - - - - - - -" value={code}
                   onChange={e=>setCode(e.target.value.replace(/[^0-9]/g,'').slice(0,8))}
                   style={{...inp,fontFamily:"'JetBrains Mono',monospace",fontSize:30,letterSpacing:14,textAlign:'center',marginBottom:16}} />
                 {error && <div style={{background:'#FEF2F2',border:'0.5px solid rgba(220,38,38,0.15)',borderRadius:8,padding:'10px 14px',marginBottom:14,fontSize:13,color:'#DC2626'}}>{error}</div>}
-                <button type="submit" disabled={loading||code.length<4} style={btn(loading||code.length<4)}>
+                <button type="submit" disabled={loading||code.length<8} style={btn(loading||code.length<8)}>
                   {loading ? 'Verifying...' : 'Verify and continue'}
                 </button>
                 <button type="button" onClick={()=>{setStage('form');setCode('');setError('')}}
